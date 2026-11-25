@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fcf8f1">
-  <meta name="description" content="A practical, personalized interview prep planner for students and job seekers.">
-  <title>Interview Prep — make this week count</title>
+  <meta name="description" content="UpNext: personalized career, application, and interview preparation. Your future starts today.">
+  <title>UpNext — your future starts today</title>
   <style>
     :root {
       --ink: #292b28; --muted: #73756d; --paper: #fcf8f1; --card: #fffefa;
@@ -73,6 +73,16 @@
     .task input[type="checkbox"] { width: 19px; height: 19px; margin: 3px 0 0; accent-color: var(--green); }
     .task strong { display: block; font-size: .95rem; }
     .task p { font-size: .88rem; margin: 3px 0 0; color: var(--muted); }
+    .roadmap-task { grid-template-columns: 22px 28px 1fr auto; }
+    .task-number { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--sage); color: var(--green); font-size: .78rem; font-weight: 850; }
+    .roadmap-task.completed .task-number { background: var(--green); color: white; }
+    .task-status { display: inline-block; margin-bottom: 5px; border-radius: 999px; padding: 3px 8px; background: #f1eee6; color: #686b62; font-size: .72rem; font-weight: 850; }
+    .task-status.current { background: var(--peach); color: #85502c; }
+    .task-status.done { background: var(--sage); color: var(--green); }
+    .action-steps { margin: 8px 0 0; padding-left: 18px; color: #53564f; font-size: .86rem; }
+    .action-steps li { margin: 4px 0; }
+    .personal-feedback { margin-top: 9px; padding: 9px 11px; border-radius: 10px; background: #f7f4ec; color: #595c54; font-size: .82rem; }
+    .task-feedback { min-height: 58px; margin-top: 9px; font-size: .84rem; }
     .date-tag { color: var(--green); font-size: .76rem; font-weight: 800; text-align: right; white-space: nowrap; }
     .divider { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
     .course { padding: 13px 0; border-top: 1px solid #f0ece4; }
@@ -103,6 +113,14 @@
     .topic-row:first-child { border-top: 0; }
     .topic-row .progress { grid-column: 1/-1; height: 7px; }
     .topic-count { font-size: .8rem; color: var(--muted); }
+    .company-career-links { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; overflow-y: hidden; padding: 4px 2px 12px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--green) #eee; }
+    .company-career-link { display: flex; flex: 0 0 230px; align-items: center; gap: 12px; min-height: 64px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #fffefa; color: var(--green); font-weight: 750; text-decoration: none; scroll-snap-align: start; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+    .company-career-link:hover { border-color: #9eb8a2; box-shadow: var(--shadow); transform: translateY(-1px); }
+    .company-career-link:focus-visible { outline: 3px solid #d78043; outline-offset: 3px; }
+    .company-career-logo, .company-career-fallback { width: 36px; height: 36px; flex: 0 0 36px; object-fit: contain; border-radius: 8px; background: #fff; }
+    .company-career-fallback { display: grid; place-items: center; color: var(--green); background: var(--sage); font-size: .8rem; font-weight: 850; }
+    .company-career-link > span { display: grid; gap: 2px; }
+    .company-career-field { color: var(--muted); font-size: .78rem; font-weight: 550; }
     .empty-state { text-align: center; padding: 30px 16px; border: 1px dashed #d8d1c5; border-radius: 16px; color: var(--muted); }
     .foot { text-align: center; border-top: 1px solid var(--line); padding: 20px 16px; color: var(--muted); font-size: .83rem; }
     .foot strong { color: var(--green); }
@@ -117,7 +135,7 @@
     @media (max-width: 560px) {
       .top-inner { padding: 10px 14px; flex-direction: column; align-items: stretch; gap: 8px; }
       .brand { justify-content: center; }
-      nav { justify-content: space-between; gap: 2px; }
+      nav { justify-content: center; flex-wrap: wrap; gap: 2px; }
       .nav-btn { padding: 8px 9px; font-size: .8rem; }
       main { padding: 24px 15px 50px; }
       .hero { gap: 18px; padding-top: 4px; }
@@ -128,16 +146,19 @@
       .section-head { align-items: start; flex-direction: column; }
       .task { grid-template-columns: 22px 1fr; }
       .date-tag { grid-column: 2; text-align: left; }
+      .roadmap-task { grid-template-columns: 22px 28px 1fr; }
+      .roadmap-task .date-tag { grid-column: 3; text-align: left; }
     }
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="top-inner">
-      <a class="brand" href="#planner" aria-label="Interview Prep home"><span class="brand-mark">ip</span> Interview Prep</a>
+      <a class="brand" href="#planner" aria-label="UpNext home"><span class="brand-mark">UN</span> UpNext</a>
       <nav aria-label="Main navigation">
         <button class="nav-btn" data-page="planner">This week</button>
         <button class="nav-btn" data-page="practice">Practice</button>
+        <button class="nav-btn" data-page="alumni">Find alumni</button>
         <button class="nav-btn" data-page="guide">Topic guide</button>
         <button class="nav-btn" data-page="community">What came up?</button>
       </nav>
@@ -147,9 +168,9 @@
     <section class="view" id="planner">
       <div class="hero">
         <div>
-          <p class="eyebrow">A little progress, every week</p>
+          <p class="eyebrow">Your future starts today</p>
           <h1>Make this week count.</h1>
-          <p class="lead">A recruiting plan for getting the role — and thoughtful practice for the interview. Start anywhere; your progress stays on this device.</p>
+          <p class="lead">A recruiting plan for landing applications and interviews. Whether your first interview is booked or still ahead, start with the next useful step.</p>
         </div>
         <aside class="hero-note">
           <p class="quote">“You don’t have to do everything today. Just the next useful thing.”</p>
@@ -162,9 +183,15 @@
             <div class="card-head"><div><p class="eyebrow">Your recruiting plan</p><h2>Tell us what you’re aiming for</h2></div><span class="pill green">Saved on this device</span></div>
             <div class="fields">
               <div class="field"><label for="job-title">Target job title</label><input id="job-title" placeholder="e.g. Financial Analyst" autocomplete="off"></div>
+              <div class="field"><label for="company">Target company</label><input id="company" placeholder="e.g. Bank or company name" autocomplete="organization"></div>
               <div class="field"><label for="region">Where are you applying?</label><select id="region"><option>Canada</option><option>United States</option></select></div>
-              <div class="field"><label for="position-type">Position type</label><select id="position-type"><option>Internship / co-op</option><option>Entry-level position</option></select></div>
+              <div class="field"><label for="preferred-location">Preferred city / area</label><input id="preferred-location" placeholder="e.g. Toronto, remote, or any location"></div>
+              <div class="field"><label for="position-type">Position type</label><select id="position-type"><option>Internship / co-op</option><option>Entry-level position</option><option>Full-time position</option></select></div>
+              <div class="field"><label for="experience-level">Education / experience level</label><input id="experience-level" placeholder="e.g. Undergraduate student, new graduate"></div>
               <div class="field"><label for="start-term">When do you want to start?</label><input id="start-term" type="month"></div>
+              <div class="field"><label for="interview-date">Interview date <span class="hint">(if you have one)</span></label><input id="interview-date" type="date"></div>
+              <div class="field full"><label for="job-description">Job description</label><textarea id="job-description" placeholder="Paste the responsibilities, qualifications, and keywords from the posting."></textarea></div>
+              <div class="field full"><label for="resume-context">Your resume, experience, and goals</label><textarea id="resume-context" placeholder="Summarize education, roles, projects, achievements, skills, and the career story you want the application to show."></textarea></div>
             </div>
             <div class="inline" style="margin-top:14px"><button class="button" id="build-plan">Build my plan</button><span class="hint">Your title can be anything. We’ll tailor known fields and use general prep for others.</span></div>
           </article>
@@ -194,6 +221,8 @@
           </article>
         </aside>
       </div>
+      <section id="your-opportunities" class="company-career-links" aria-label="Company student career links" tabindex="0">
+      </section>
     </section>
 
     <section class="view" id="practice" hidden>
@@ -205,6 +234,7 @@
             <div class="fields">
               <div class="field"><label for="practice-job">Job title</label><input id="practice-job" placeholder="e.g. Investment Banking Analyst"></div>
               <div class="field"><label for="round">Interview round</label><select id="round"><option>First / recruiter screen</option><option>Behavioural</option><option>Technical</option><option>Case study</option><option>Final round</option><option>Not sure yet</option></select></div>
+              <div class="field"><label for="focus-topic">Interview topic</label><select id="focus-topic"><option value="">All topics (adaptive)</option></select><span class="hint" id="focus-topic-status">Choose a topic to make it the first question in your next session.</span></div>
               <div class="field full"><label for="recruiter-notes">Recruiter notes or format hints (optional)</label><textarea id="recruiter-notes" placeholder="e.g. 30-minute technical screen; focus on valuation and accounting basics"></textarea></div>
             </div>
             <p style="margin:12px 0 4px"><strong>Which topics feel difficult right now?</strong> Choose any that apply.</p>
@@ -229,7 +259,7 @@
       <article class="card">
         <div class="fields">
           <div class="field"><label for="guide-job">Role to tailor this guide</label><input id="guide-job" placeholder="e.g. Data Analyst"></div>
-          <div class="field"><label for="guide-round">Round</label><select id="guide-round"><option>Technical</option><option>Behavioural</option><option>Case study</option><option>First / recruiter screen</option></select></div>
+          <div class="field"><label for="guide-round">Round</label><select id="guide-round"><option value="technical">Technical</option><option value="behavioral">Behavioral</option><option value="case-study">Case study</option><option value="screening">First / recruiter screen</option><option value="final-round">Final round</option></select></div>
         </div>
         <div class="inline" style="margin-top:12px"><button class="button secondary" id="update-guide">Update topic guide</button><span class="hint">Enter any job title; unfamiliar roles get general questions.</span></div>
       </article>
@@ -250,7 +280,7 @@
             <div class="card-head"><div><p class="eyebrow">Your turn</p><h2>Report topics from an interview</h2><p class="muted">No names, company names, or personal details, please.</p></div></div>
             <div class="fields">
               <div class="field"><label for="report-job">Job title / area</label><input id="report-job" placeholder="e.g. Software Engineer"></div>
-              <div class="field"><label for="report-round">Interview round</label><select id="report-round"><option>Technical</option><option>Behavioural</option><option>Case study</option><option>First / recruiter screen</option><option>Final round</option></select></div>
+              <div class="field"><label for="report-round">Interview round</label><select id="report-round"><option value="technical">Technical</option><option value="behavioral">Behavioural</option><option value="case-study">Case study</option><option value="screening">First / recruiter screen</option><option value="final-round">Final round</option></select></div>
             </div>
             <p style="margin:14px 0 4px"><strong>Which topics came up?</strong></p><div id="report-topics" class="topic-grid"></div>
             <button class="button" id="submit-report">Submit anonymous sample report</button>
@@ -268,6 +298,19 @@
         </aside>
       </div>
     </section>
+
+    <section class="view" id="alumni" hidden>
+      <div class="page-intro"><p class="eyebrow">Make a connection</p><h1>Find alumni in your field.</h1><p>Enter your school and the role you want to explore. We’ll open a LinkedIn people search and draft a friendly message you can personalize.</p></div>
+      <article class="card">
+        <div class="fields">
+          <div class="field"><label for="alumni-school">Your school</label><input id="alumni-school" placeholder="e.g. University of Toronto" autocomplete="organization"></div>
+          <div class="field"><label for="alumni-role">Role you want</label><input id="alumni-role" placeholder="e.g. Investment Banking Analyst" autocomplete="off"></div>
+        </div>
+        <div class="inline" style="margin-top:14px"><button class="button" id="find-alumni">Find alumni on LinkedIn</button></div>
+        <p class="hint" style="margin-top:12px">LinkedIn provides the people and profiles. This page does not collect or scrape profile information.</p>
+      </article>
+      <div id="alumni-results" style="margin-top:16px"></div>
+    </section>
   </main>
   <footer class="foot"><strong>Student prototype</strong> · Fictional examples · Progress is saved only in this browser</footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -275,6 +318,9 @@
   (function () {
     "use strict";
     const STORE = "interviewPrep.v1";
+    const JOB_FEED_CACHE = STORE + ".opportunities";
+    const JOB_FEED_ATTEMPT = STORE + ".opportunities-attempt";
+    const JOB_FEED_REFRESH_MS = 6 * 60 * 60 * 1000;
     const TOPIC_BANK = {
       finance: ["Financial statements", "Valuation", "Discounted cash flow", "Markets & business judgment", "Excel & analysis", "Behavioural stories"],
       banking: ["Discounted cash flow", "Valuation multiples", "Accounting links", "Enterprise value", "Accretion / dilution", "Markets & business judgment", "Behavioural stories"],
@@ -296,8 +342,12 @@
     const BASE_REPORTS = [
       { label: "Sample reports (fictional)", topics: { "Discounted cash flow": 8, "Behavioural stories": 7, "SQL": 6, "Case structure": 6, "Data structures": 5, "Financial statements": 5, "System design": 4, "Communication": 4, "Valuation multiples": 3, "Testing & quality": 3, "Market sizing": 3, "Role motivation": 2 } }
     ];
-    const DEFAULT_STATE = { plan: { job: "", region: "Canada", position: "Internship / co-op", term: "", confirmedDate: "" }, checked: {}, practice: { job: "", round: "First / recruiter screen", notes: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [] };
+    const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
     let state = loadState();
+    let jobFeed = null;
+    let jobFeedRequest = null;
+    let jobFeedError = "";
+    let lastJobFeedAttempt = 0;
     const $ = (selector, root) => (root || document).querySelector(selector);
     const $$ = (selector, root) => Array.from((root || document).querySelectorAll(selector));
     function loadState() {
@@ -305,7 +355,9 @@
         const val = JSON.parse(localStorage.getItem(STORE) || "null");
         return val && typeof val === "object" ? Object.assign({}, DEFAULT_STATE, val, {
           plan: Object.assign({}, DEFAULT_STATE.plan, val.plan || {}),
-          practice: Object.assign({}, DEFAULT_STATE.practice, val.practice || {})
+          practice: Object.assign({}, DEFAULT_STATE.practice, val.practice || {}),
+          taskFeedback: Object.assign({}, DEFAULT_STATE.taskFeedback, val.taskFeedback || {}),
+          opportunities: Array.isArray(val.opportunities) ? val.opportunities : []
         }) : structuredClone(DEFAULT_STATE);
       } catch (e) { return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
     }
@@ -344,35 +396,119 @@
       });
     }
     function makePlanTasks(job) {
-      const role = job || "your target role", fam = family(job);
-      let roleTask = "Review one role-relevant skill from a recent project and write down a clear example of how you used it.";
-      if (fam === "banking" || fam === "finance") roleTask = "Rewrite one résumé bullet to show analytical impact: modelled a fictional company’s performance, found a trend, and quantify what changed.";
-      if (fam === "accounting") roleTask = "Rewrite one résumé bullet to show accuracy and judgment: explain a reconciliation, control check or reporting task and its outcome.";
-      if (fam === "software") roleTask = "Polish a project bullet: name the user problem, the feature or technology you built, and a measurable result.";
-      if (fam === "data") roleTask = "Strengthen one data-project bullet: name the dataset, method, insight and decision the analysis supported.";
-      if (fam === "engineering") roleTask = "Improve one design/project bullet: describe the constraint, your engineering decision and how you tested the result.";
-      if (fam === "business") roleTask = "Improve one experience bullet: explain the customer or business problem, your action and the result.";
-      const project = {
-        banking:"Build a simple three-statement forecast for a fictional company and explain two assumptions.",
-        finance:"Create a small spreadsheet that compares scenarios for a fictional organization and summarizes the main risk.",
-        accounting:"Use a fictional transaction list to prepare a simple reconciliation and document three control checks.",
-        business:"Choose a fictional campus service, map its users and estimate one practical way to improve it.",
-        software:"Build a tiny useful tool, add a few tests, and write a short note explaining one design trade-off.",
-        data:"Analyze a small public or made-up dataset, make one clear chart, and write three decision-focused findings.",
-        engineering:"Sketch a small design for a real everyday problem, compare two materials or approaches, and document a basic test.",
-        general:"Choose a small problem related to the role, create a one-page solution or demonstration, and explain your approach."
+      const role = job || "your target role";
+      const fam = family(job);
+      const company = state.plan.company || "the target company";
+      const jd = state.plan.jobDescription;
+      const resume = state.plan.resumeContext;
+      const weakness = Object.entries(state.practice.missed || {}).sort((a,b)=>b[1]-a[1])[0];
+      const industryExamples = {
+        banking: "Use only verified deal, sector, team, and culture details from official company sources; do not invent transactions or credentials.",
+        finance: "Link one real project or experience to financial analysis, decision-making, and the responsibilities in the posting.",
+        accounting: "Use examples involving accuracy, controls, reconciliation, audit judgment, or reporting outcomes.",
+        software: "Use one real project to show a problem, implementation trade-off, testing approach, and measurable or observable result.",
+        data: "Use one real dataset or project to show data quality, analysis, insight, and a decision it supported.",
+        engineering: "Use one real design project to show the constraint, decision, testing, and technical trade-off.",
+        business: "Use one real team, customer, or operational problem to show structure, action, and outcome.",
+        general: "Use a real experience that demonstrates the role's required skill and your own contribution."
       }[fam];
-      const cover = fam === "banking" || fam === "finance"
-        ? "Draft a short cover letter paragraph connecting your interest in a sector to a recent fictional company or market trend. Explain why your analytical experience is relevant."
-        : "Draft a short cover letter paragraph: connect one real skill from your experience to a problem this role is likely to solve. Avoid generic claims; include a concrete example.";
-      return [
-        {id:"resume",title:"Refresh one résumé bullet",detail:roleTask,offset:-21},
-        {id:"cover",title:"Develop a cover-letter example",detail:cover,offset:-18},
-        {id:"coffee",title:"Invite two people for a coffee chat",detail:"Try a recent graduate in " + familyName(job) + " and someone doing " + role + " work. Ask for 15 minutes; make it easy to decline.",offset:-14},
-        {id:"questions",title:"Prepare three thoughtful questions",detail:"Ask about a typical week, a skill new hires often build, and a project that taught them something. Listen for useful details rather than asking for a referral.",offset:-10},
-        {id:"learn",title:"Take one free lesson and build a mini-project",detail:project,offset:-7},
-        {id:"practice",title:"Practise a concise role story",detail:"Prepare a 60-second introduction for " + role + " and one example showing how you handle a challenge.",offset:-3}
+      const jdHint = jd
+        ? "Match keywords and examples from the pasted description; do not copy it word-for-word."
+        : "Add the job description above so this roadmap can identify its exact priorities.";
+      const resumeHint = resume
+        ? "Ground each bullet and answer in the experience you provided; keep every claim defensible."
+        : "Add your education, experience, achievements, and goals above before finalizing materials.";
+      let coreAnswers = [
+        "Tell me about yourself.",
+        "Why do you want " + role + "?",
+        "Why " + company + "?",
+        "Why this industry?",
+        "Why should we hire you?"
       ];
+      const tasks = [
+        {
+          id:"resume-foundation", title:"Build Your Resume",
+          detail:"Create a strong foundational resume for " + role + " using your real background.",
+          steps:["Select 3–5 strongest achievements aligned with your career goal.","Rewrite each bullet as action + relevant skill + evidence or result.","Create a clear skills section and remove claims that are unsupported or repetitive.","Read the full draft for one consistent story across education, experience, and goals."],
+          feedback:resumeHint + " " + industryExamples,
+          offset:-21
+        },
+        {
+          id:"resume-tailor", title:"Tailor Your Resume",
+          detail:"Adapt the foundation to the responsibilities and keywords in this specific posting.",
+          steps:["Extract the role's recurring responsibilities, skills, and qualifications.","Map each requirement to a real experience or explain a credible bridge.","Rewrite 2–4 bullets to reflect the posting's priorities and exact meaning.","Remove weak or irrelevant lines and keep the one-page story focused."],
+          feedback:jdHint + " Use truthful matches only; a missing qualification should be framed as a learning gap, not invented experience.",
+          offset:-18
+        },
+        {
+          id:"cover-letter", title:"Build a Tailored Cover Letter",
+          detail:"Write a specific letter for " + company + " and " + role + ".",
+          steps:["Open with the exact role and a genuine reason it fits your goals.","Use one or two concrete experiences that solve problems stated in the description.","Explain why " + company + " through verified work, focus areas, people, or culture.","Close with the contribution you would bring and a clear next step."],
+          feedback:"Personalize only with information you can verify from official company pages, annual reports, news, or the team. " + industryExamples,
+          offset:-14
+        },
+        {
+          id:"personal-story", title:"Build Your Personal Story",
+          detail:"Connect your background, interests, and goals to why you are pursuing this career.",
+          steps:["Choose the turning point or pattern that led you toward " + familyName(job) + ".","Connect 2–3 experiences to the skills you are building now.","State why this career and role fit the next stage of your goals.","Practice a 60–90 second version that is specific, natural, and evidence-based."],
+          feedback:resumeHint,
+          offset:-10
+        },
+        {
+          id:"core-answers", title:"Prepare Core Interview Answers",
+          detail:"Prepare five authentic answers using your resume and the application.",
+          steps:coreAnswers.map(q=>"Draft: “" + q + "” using one real evidence point and a clear conclusion."),
+          feedback:"For “Why " + company + "?,” use verified transactions or deals, industry specialties, team structure, culture, or recent public initiatives that are relevant. Do not mention details until checked. “Why this industry?” should reflect your own interest and evidence.",
+          offset:-7
+        },
+        {
+          id:"technical-practice", title:"Practice Technical Questions",
+          detail:"Prepare questions for " + role + " at " + company + ", based on the posting and industry.",
+          steps:["From the job description, list 3–5 role-specific technical concepts.","Generate one question for each concept and practice a structured spoken answer.","For finance, accounting, engineering, software, consulting, or other fields, validate frameworks and formulas rather than rehearsing a generic script.","Test at least one answer against a timed 2-minute or coding/case format."],
+          feedback:industryExamples + " The Practice page can turn the posting and chosen weak topics into focused sessions.",
+          offset:-3
+        },
+        {
+          id:"coffee-chats", title:"Schedule Coffee Chats",
+          detail:"Build insight through a small number of relevant conversations.",
+          steps:["Identify 2–3 people doing " + role + " or working on similar teams at " + company + ".","Ask for 15–20 minutes and prepare 4–5 specific questions.","Ask about a typical week, key skills, team structure, and recent priorities.","Send a specific thank-you note and convert what you learn into better application answers."],
+          feedback:"Prioritize meaningful conversations over volume. Use only verified public or volunteered information, and never ask a connection to invent insider details.",
+          offset:-10
+        },
+        {
+          id:"weak-areas", title:"Improve Weak Areas",
+          detail:"Turn previous answers and mistakes into a focused personal practice plan.",
+          steps:["Review missed questions and repeated weak topics.","Rewrite the weakest answer using a better structure and one specific example.","Take a new 3-question diagnostic or mock interview.","Mark the topic addressed only after you can explain it clearly without rereading notes."],
+          feedback:weakness
+            ? "Current priority: " + weakness[0] + " (" + weakness[1] + " recent miss" + (weakness[1]===1?"":"es") + "). Repeat this topic until the answer is specific and structurally complete."
+            : "Start a diagnostic in Practice. It will rank weak areas from your answers and use them to personalize future sessions.",
+          offset:0
+        }
+      ];
+      const today = new Date();
+      today.setHours(12,0,0,0);
+      const daysUntil = date => {
+        if (!date) return null;
+        const target = new Date(date + "T12:00:00");
+        return Math.ceil((target - today) / 86400000);
+      };
+      const interviewDays = daysUntil(state.plan.interviewDate);
+      const openingDays = daysUntil(state.plan.confirmedDate);
+      const byId = id => tasks.find(task => task.id === id);
+      const orderedIds = [];
+      if (interviewDays !== null && interviewDays >= 0 && interviewDays <= 14) {
+        orderedIds.push("core-answers","personal-story","weak-areas","technical-practice","resume-tailor","cover-letter","resume-foundation","coffee-chats");
+        tasks.forEach(task => { if (!orderedIds.includes(task.id)) orderedIds.push(task.id); });
+      } else if (openingDays !== null && openingDays >= 60) {
+        orderedIds.push("resume-foundation","coffee-chats","technical-practice","personal-story","core-answers","weak-areas","resume-tailor","cover-letter");
+        tasks.forEach(task => { if (!orderedIds.includes(task.id)) orderedIds.push(task.id); });
+      } else if (interviewDays !== null && interviewDays <= 45) {
+        orderedIds.push("personal-story","core-answers","weak-areas","technical-practice","resume-tailor","cover-letter","coffee-chats","resume-foundation");
+        tasks.forEach(task => { if (!orderedIds.includes(task.id)) orderedIds.push(task.id); });
+      } else {
+        orderedIds.push("resume-foundation","resume-tailor","cover-letter","personal-story","core-answers","technical-practice","coffee-chats","weak-areas");
+      }
+      return orderedIds.map(byId).filter(Boolean);
     }
     function estimatedOpening() {
       const term = state.plan.term;
@@ -390,26 +526,39 @@
       return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
     }
     function taskDate(task) {
-      if (!state.plan.confirmedDate) return "";
-      const opening = new Date(state.plan.confirmedDate + "T12:00:00");
-      const d = new Date(opening); d.setDate(opening.getDate() + task.offset);
+      if (!state.plan.interviewDate && !state.plan.confirmedDate) return "";
+      const reference = new Date((state.plan.interviewDate || state.plan.confirmedDate) + "T12:00:00");
+      const d = new Date(reference); d.setDate(reference.getDate() + task.offset);
       return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     }
     function renderPlan() {
       const tasks = makePlanTasks(state.plan.job);
       const ul = $("#task-list"); ul.replaceChildren();
       let done = 0;
+      let firstIncomplete = tasks.findIndex(task => !state.checked[task.id]);
       tasks.forEach(task => {
-        const li = document.createElement("li"); li.className = "task";
+        const li = document.createElement("li"); li.className = "task roadmap-task";
         const check = document.createElement("input"); check.type = "checkbox"; check.checked = !!state.checked[task.id]; check.setAttribute("aria-label", "Mark " + task.title + " complete");
         if (check.checked) done++;
         check.addEventListener("change", () => { state.checked[task.id] = check.checked; save(); renderPlan(); });
+        const number = document.createElement("span"); number.className = "task-number"; number.textContent = String(tasks.indexOf(task) + 1);
         const content = document.createElement("div");
+        const status = document.createElement("span");
+        status.className = "task-status" + (check.checked ? " done" : tasks.indexOf(task) === firstIncomplete ? " current" : "");
+        status.textContent = check.checked ? "Completed" : tasks.indexOf(task) === firstIncomplete ? "Current step" : "Up next";
         const title = document.createElement("strong"); title.textContent = task.title;
         const detail = document.createElement("p"); detail.textContent = task.detail;
-        content.append(title, detail);
+        const steps = document.createElement("ol"); steps.className = "action-steps";
+        task.steps.forEach(step => { const item = document.createElement("li"); item.textContent = step; steps.append(item); });
+        const feedback = document.createElement("div"); feedback.className = "personal-feedback"; feedback.textContent = "Personalized guidance: " + task.feedback;
+        const noteLabel = document.createElement("label"); noteLabel.textContent = "Your notes / progress";
+        const note = document.createElement("textarea"); note.className = "task-feedback"; note.placeholder = "Capture a draft, key change, answer, or next step.";
+        note.value = state.taskFeedback[task.id] || "";
+        note.addEventListener("change", () => { state.taskFeedback[task.id] = note.value; save(); });
+        content.append(status, title, detail, steps, feedback, noteLabel, note);
         const date = document.createElement("span"); date.className = "date-tag"; date.textContent = taskDate(task) ? (check.checked ? "Done" : taskDate(task)) : "";
-        li.append(check, content, date); ul.append(li);
+        if (check.checked) li.classList.add("completed");
+        li.append(check, number, content, date); ul.append(li);
       });
       const pct = Math.round(done / tasks.length * 100);
       $("#task-count").textContent = done + " / " + tasks.length + " done";
@@ -417,10 +566,415 @@
       $("#progress-bar").style.width = pct + "%";
       $(".progress[role=progressbar]").setAttribute("aria-valuenow", String(pct));
       $("#checklist-subtitle").textContent = state.plan.job ? "A practical week of progress toward " + state.plan.job + "." : "A few specific actions to keep your momentum up.";
-      $("#opening-estimate").textContent = state.plan.confirmedDate
+      const today = new Date(); today.setHours(12,0,0,0);
+      const daysUntil = date => date ? Math.ceil((new Date(date + "T12:00:00") - today) / 86400000) : null;
+      const interviewDays = daysUntil(state.plan.interviewDate);
+      const openingDays = daysUntil(state.plan.confirmedDate);
+      let deadlinePlan = "";
+      if (interviewDays !== null && interviewDays >= 0 && interviewDays <= 14) {
+        deadlinePlan = "Interview sprint — " + interviewDays + " day" + (interviewDays===1?"":"s") + " left: focus first on “why this job,” “why this company,” your personal story, and behavioral answers; move into technicals once those are solid.";
+      } else if (openingDays !== null && openingDays >= 60) {
+        deadlinePlan = "Long runway — " + openingDays + " days until applications open: spread out resume work, coffee chats, technical practice, and behavioral practice over the coming weeks.";
+      } else if (interviewDays !== null && interviewDays <= 45) {
+        deadlinePlan = "Balanced interview prep — " + interviewDays + " days left: combine your personal story and core behavioral answers with targeted technical practice.";
+      } else {
+        deadlinePlan = "First-interview roadmap — no interview date entered. Build a strong application, practice the core stories and behaviorals, and develop technical confidence while you pursue your first interview.";
+      }
+      const openingText = state.plan.confirmedDate
         ? "Confirmed opening date entered: " + new Date(state.plan.confirmedDate + "T12:00:00").toLocaleDateString(undefined, {dateStyle:"long"}) + ". Remaining task dates are scheduled relative to it; completed tasks remain checked."
         : estimatedOpening();
+      $("#opening-estimate").textContent = deadlinePlan + " " + openingText;
       renderApplicationTips();
+    }
+    function normalizeRemotiveJob(raw) {
+      if (!raw || !raw.id || !raw.title || !raw.company_name) return null;
+      try {
+        const posting = new URL(raw.url);
+        if (posting.protocol !== "https:" || !["remotive.com", "www.remotive.com"].includes(posting.hostname)) return null;
+        let logo = "";
+        try {
+          const logoURL = new URL(raw.company_logo);
+          if (logoURL.protocol === "https:" && ["remotive.com", "www.remotive.com"].includes(logoURL.hostname)) logo = logoURL.href;
+        } catch (error) {}
+        return {
+          id: String(raw.id),
+          source: "Remotive",
+          title: String(raw.title),
+          company: String(raw.company_name),
+          category: String(raw.category || ""),
+          tags: Array.isArray(raw.tags) ? raw.tags.map(String) : [],
+          employmentType: String(raw.job_type || ""),
+          location: String(raw.candidate_required_location || ""),
+          posted: String(raw.publication_date || ""),
+          salary: String(raw.salary || ""),
+          description: String(raw.description || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").slice(0, 5000),
+          url: posting.href,
+          logo
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+    function normalizeArbeitnowJob(raw) {
+      if (!raw || !raw.slug || !raw.title || !raw.company_name) return null;
+      try {
+        const posting = new URL(raw.url);
+        if (posting.protocol !== "https:" || !isArbeitnowHost(posting.hostname)) return null;
+        return {
+          id: "arbeitnow-" + String(raw.slug),
+          source: "Arbeitnow",
+          title: String(raw.title),
+          company: String(raw.company_name),
+          category: Array.isArray(raw.tags) ? raw.tags.map(String).join(" ") : "",
+          tags: Array.isArray(raw.tags) ? raw.tags.map(String) : [],
+          employmentType: Array.isArray(raw.job_types) ? raw.job_types.map(String).join(", ") : "",
+          location: String(raw.location || "") + (raw.remote ? " · Remote" : ""),
+          posted: raw.created_at ? new Date(Number(raw.created_at) * 1000).toISOString() : "",
+          salary: "",
+          description: String(raw.description || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").slice(0, 5000),
+          url: posting.href,
+          logo: ""
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+    function isArbeitnowHost(hostname) {
+      return /(^|\.)arbeitnow\.(com|fr|ch|nl)$/.test(hostname) || /(^|\.)arbeitnow\.co\.uk$/.test(hostname);
+    }
+    function normalizeCachedJob(job) {
+      if (!job || !job.id || !job.title || !job.company || !job.url) return null;
+      try {
+        const posting = new URL(job.url);
+        const remotive = ["remotive.com", "www.remotive.com"].includes(posting.hostname);
+        const arbeitnow = isArbeitnowHost(posting.hostname);
+        if (posting.protocol !== "https:" || (!remotive && !arbeitnow)) return null;
+        let logo = "";
+        try {
+          const logoURL = new URL(job.logo || "");
+          if (logoURL.protocol === "https:" && ["remotive.com", "www.remotive.com"].includes(logoURL.hostname)) logo = logoURL.href;
+        } catch (error) {}
+        return {
+          id: String(job.id),
+          source: remotive ? "Remotive" : "Arbeitnow",
+          title: String(job.title),
+          company: String(job.company),
+          category: String(job.category || ""),
+          tags: Array.isArray(job.tags) ? job.tags.map(String) : [],
+          employmentType: String(job.employmentType || ""),
+          location: String(job.location || ""),
+          posted: String(job.posted || ""),
+          salary: String(job.salary || ""),
+          description: String(job.description || "").slice(0, 5000),
+          url: posting.href,
+          logo
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+    function cachedJobFeed() {
+      if (jobFeed) return jobFeed;
+      try {
+        const cached = JSON.parse(localStorage.getItem(JOB_FEED_CACHE) || localStorage.getItem(STORE + ".remotive") || "null");
+        if (cached && Array.isArray(cached.jobs) && Number.isFinite(Date.parse(cached.fetchedAt))) {
+          jobFeed = { fetchedAt: cached.fetchedAt, jobs: cached.jobs.map(normalizeCachedJob).filter(Boolean) };
+        }
+      } catch (error) {
+        jobFeedError = "Saved job results could not be read from browser storage.";
+      }
+      return jobFeed;
+    }
+    const STUDENT_CAREER_COMPANIES = [
+      { name:"Goldman Sachs", field:"Investment banking", domain:"www.goldmansachs.com", url:"https://www.goldmansachs.com/careers/students" },
+      { name:"JPMorgan Chase", field:"Investment banking", domain:"www.jpmorganchase.com", url:"https://www.jpmorganchase.com/careers/explore-opportunities/programs" },
+      { name:"Morgan Stanley", field:"Investment banking", domain:"www.morganstanley.com", url:"https://www.morganstanley.com/people-opportunities/students-graduates" },
+      { name:"RBC", field:"Finance", domain:"www.rbc.com", url:"https://jobs.rbc.com/ca/en/students-graduates" },
+      { name:"Deloitte", field:"Accounting and consulting", domain:"www.deloitte.com", url:"https://www.deloitte.com/us/en/careers/student-careers.html" },
+      { name:"Accenture", field:"Consulting and technology", domain:"www.accenture.com", url:"https://www.accenture.com/us-en/careers/life-at-accenture/internships-students" },
+      { name:"Microsoft", field:"Software and technology", domain:"www.microsoft.com", url:"https://careers.microsoft.com/v2/global/en/students" },
+      { name:"Google", field:"Software and technology", domain:"www.google.com", url:"https://www.google.com/about/careers/applications/students" },
+      { name:"Amazon", field:"Software and operations", domain:"www.amazon.com", url:"https://www.amazon.jobs/content/en/career-programs/university" },
+      { name:"Meta", field:"Software and technology", domain:"www.meta.com", url:"https://www.metacareers.com/careerprograms/students" },
+      { name:"NVIDIA", field:"Engineering and technology", domain:"www.nvidia.com", url:"https://www.nvidia.com/en-us/about-nvidia/careers/university-recruiting/" },
+      { name:"Arup", field:"Engineering", domain:"www.arup.com", url:"https://www.arup.com/en-us/careers/early-careers/" }
+    ];
+    function renderCompanyCareerLinks() {
+      const list = $("#your-opportunities");
+      list.replaceChildren();
+      STUDENT_CAREER_COMPANIES.forEach(company => {
+        const link = document.createElement("a");
+        link.className = "company-career-link";
+        link.href = company.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.setAttribute("aria-label", company.name + " " + company.field + " student careers");
+        const logo = document.createElement("img");
+        logo.className = "company-career-logo";
+        logo.src = "https://www.google.com/s2/favicons?domain_url=" + encodeURIComponent("https://" + company.domain) + "&sz=64";
+        logo.alt = "";
+        logo.loading = "lazy";
+        logo.onerror = () => {
+          const fallback = document.createElement("span");
+          fallback.className = "company-career-fallback";
+          fallback.textContent = company.name.split(/\s+/).map(word => word[0]).join("").toUpperCase();
+          fallback.setAttribute("aria-hidden", "true");
+          logo.replaceWith(fallback);
+        };
+        const label = document.createElement("span");
+        const name = document.createElement("strong");
+        name.textContent = company.name;
+        const field = document.createElement("span");
+        field.className = "company-career-field";
+        field.textContent = company.field + " · Student careers";
+        label.append(name, field);
+        link.append(logo, label);
+        list.append(link);
+      });
+    }
+    function companyMark(company) {
+      const mark = document.createElement("span");
+      mark.className = "company-mark";
+      mark.textContent = String(company).trim().split(/\s+/).slice(0, 2).map(word => word[0]).join("").toUpperCase();
+      mark.setAttribute("aria-label", "Company initials");
+      return mark;
+    }
+    function saveRemotiveJob(job, status) {
+      const opportunity = {
+        id: "remotive-" + job.id,
+        sourceJobId: job.id,
+        source: "Remotive",
+        company: job.company,
+        title: job.title,
+        location: job.location ? "Remote · " + job.location : "Remote",
+        employmentType: job.employmentType.replace(/_/g, " ") || "Not specified",
+        startDate: "",
+        deadline: "",
+        posted: job.posted,
+        logo: job.logo,
+        url: job.url,
+        status,
+        prepPlan: false
+      };
+      const existing = state.opportunities.findIndex(item => item.sourceJobId === job.id);
+      if (existing >= 0) {
+        state.opportunities[existing].status = status;
+      } else {
+        state.opportunities.unshift(opportunity);
+      }
+      save();
+      renderOpportunities();
+    }
+    function renderOpportunityTracker() {
+      const list = $("#opportunity-list");
+      list.replaceChildren();
+      const opportunities = state.opportunities.slice().sort((a, b) =>
+        (a.deadline || "9999-12-31").localeCompare(b.deadline || "9999-12-31") || a.company.localeCompare(b.company));
+      if (!opportunities.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Save a job from the live results above to track its application stage and build a preparation plan.";
+        list.append(empty);
+        return;
+      }
+      opportunities.forEach(opportunity => {
+        const card = document.createElement("article");
+        card.className = "opportunity-card";
+        const heading = document.createElement("div");
+        heading.className = "opportunity-heading";
+        if (opportunity.logo) {
+          const logo = document.createElement("img");
+          logo.className = "company-mark";
+          logo.src = opportunity.logo;
+          logo.alt = opportunity.company + " logo";
+          logo.referrerPolicy = "no-referrer";
+          logo.onerror = () => { logo.replaceWith(companyMark(opportunity.company)); };
+          heading.append(logo);
+        } else {
+          heading.append(companyMark(opportunity.company));
+        }
+        const identity = document.createElement("div");
+        const title = document.createElement("h3");
+        title.textContent = opportunity.title;
+        const company = document.createElement("strong");
+        company.textContent = opportunity.company;
+        const detail = document.createElement("p");
+        detail.className = "opportunity-meta";
+        detail.textContent = [opportunity.location, opportunity.employmentType, opportunity.startDate ? "Expected start: " + opportunity.startDate : "Expected start: Not listed"].filter(Boolean).join(" · ");
+        identity.append(title, company, detail);
+        heading.append(identity);
+        const metadata = document.createElement("p");
+        metadata.className = "opportunity-meta";
+        if (opportunity.deadline) {
+          const deadline = new Date(opportunity.deadline + "T12:00:00");
+          const passed = deadline < new Date(new Date().toDateString());
+          metadata.textContent = "Application deadline: " + deadline.toLocaleDateString(undefined, {dateStyle:"medium"}) + (passed ? " · Date has passed; recheck whether the posting is still open." : " · Confirm on the posting.");
+        } else {
+          metadata.textContent = "Application deadline: Not provided by the job source.";
+        }
+        const controls = document.createElement("div");
+        controls.className = "inline opportunity-actions";
+        const apply = document.createElement("a");
+        apply.className = "button";
+        apply.href = opportunity.url;
+        apply.target = "_blank";
+        apply.rel = "noopener noreferrer";
+        apply.textContent = opportunity.source === "Remotive" ? "View posting / apply" : "Apply Now";
+        const status = document.createElement("select");
+        status.setAttribute("aria-label", "Application status for " + opportunity.title + " at " + opportunity.company);
+        OPPORTUNITY_STATUSES.forEach(value => status.add(new Option(value, value)));
+        status.value = OPPORTUNITY_STATUSES.includes(opportunity.status) ? opportunity.status : "Interested";
+        status.addEventListener("change", () => {
+          opportunity.status = status.value;
+          save();
+          renderOpportunities();
+        });
+        const markApplied = document.createElement("button");
+        markApplied.type = "button";
+        markApplied.className = "button secondary small";
+        markApplied.textContent = "Mark as Applied";
+        markApplied.disabled = opportunity.status === "Applied";
+        markApplied.addEventListener("click", () => {
+          opportunity.status = "Applied";
+          save();
+          renderOpportunities();
+        });
+        const prep = document.createElement("button");
+        prep.type = "button";
+        prep.className = "button ghost small";
+        prep.textContent = opportunity.prepPlan ? "Hide prep plan" : "Build personalized prep plan";
+        prep.addEventListener("click", () => {
+          opportunity.prepPlan = !opportunity.prepPlan;
+          save();
+          renderOpportunities();
+        });
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "button ghost small";
+        remove.textContent = "Remove";
+        remove.addEventListener("click", () => {
+          state.opportunities = state.opportunities.filter(item => item.id !== opportunity.id);
+          save();
+          renderOpportunities();
+        });
+        controls.append(apply, status, markApplied, prep, remove);
+        card.append(heading, metadata, controls);
+        if (opportunity.prepPlan) {
+          const plan = document.createElement("div");
+          plan.className = "opportunity-plan";
+          const planTitle = document.createElement("strong");
+          planTitle.textContent = "Preparation plan · " + opportunity.title + " at " + opportunity.company;
+          const steps = document.createElement("ol");
+          steps.className = "action-steps";
+          [
+            "Review the posting for required qualifications, responsibilities, application steps, and any confirmed deadline.",
+            "Tailor your resume to the role using specific, truthful evidence from your education and experience.",
+            "Prepare “why this role?” and “why " + opportunity.company + "?” using verified information about the team and work.",
+            "Practise role-relevant questions and confirm the interview format with the employer."
+          ].forEach(text => {
+            const step = document.createElement("li");
+            step.textContent = text;
+            steps.append(step);
+          });
+          const practice = document.createElement("button");
+          practice.type = "button";
+          practice.className = "button secondary small";
+          practice.textContent = "Practice for this role";
+          practice.addEventListener("click", () => {
+            state.practice.job = opportunity.title;
+            state.practice.notes = "Preparing for " + opportunity.title + " at " + opportunity.company + ". Use the saved job posting to guide practice.";
+            save();
+            syncPracticeForm();
+            showPage("practice");
+          });
+          plan.append(planTitle, steps, practice);
+          card.append(plan);
+        }
+        list.append(card);
+      });
+    }
+    function renderOpportunities() {
+      renderJobListings();
+      refreshJobFeed();
+    }
+    async function refreshJobFeed() {
+      const feed = cachedJobFeed();
+      const age = feed ? Date.now() - Date.parse(feed.fetchedAt) : Infinity;
+      if (feed && age < JOB_FEED_REFRESH_MS) {
+        $("#opportunity-feed-status").textContent = feed.jobs.length ? "" : "No job links are available from the current feeds.";
+        renderJobListings();
+        return;
+      }
+      if (jobFeedRequest) return jobFeedRequest;
+      try {
+        lastJobFeedAttempt = Math.max(lastJobFeedAttempt, Number(localStorage.getItem(JOB_FEED_ATTEMPT)) || 0);
+      } catch (error) {
+        jobFeedError = "Browser storage is unavailable; job refresh limits may not persist between page visits.";
+      }
+      if (lastJobFeedAttempt && Date.now() - lastJobFeedAttempt < JOB_FEED_REFRESH_MS) {
+        $("#opportunity-feed-status").textContent = feed && feed.jobs.length
+          ? (jobFeedError || "")
+          : "Job links were checked recently, but no saved links are available yet.";
+        renderJobListings();
+        return;
+      }
+      lastJobFeedAttempt = Date.now();
+      try {
+        localStorage.setItem(JOB_FEED_ATTEMPT, String(lastJobFeedAttempt));
+      } catch (error) {
+        jobFeedError = "Browser storage is unavailable; job refresh limits may not persist between page visits.";
+      }
+      $("#opportunity-feed-status").textContent = feed && feed.jobs.length ? "" : "Loading job links…";
+      jobFeedRequest = (async () => {
+        try {
+          const sources = await Promise.allSettled([
+            fetch("https://remotive.com/api/remote-jobs").then(async response => {
+              if (!response.ok) throw new Error("Remotive returned HTTP " + response.status + ".");
+              const data = await response.json();
+              if (!data || !Array.isArray(data.jobs)) throw new Error("Remotive returned an unexpected response.");
+              return { source: "Remotive", jobs: data.jobs.map(normalizeRemotiveJob).filter(Boolean) };
+            }),
+            fetch("https://www.arbeitnow.com/api/job-board-api").then(async response => {
+              if (!response.ok) throw new Error("Arbeitnow returned HTTP " + response.status + ".");
+              const data = await response.json();
+              if (!data || !Array.isArray(data.data)) throw new Error("Arbeitnow returned an unexpected response.");
+              return { source: "Arbeitnow", jobs: data.data.map(normalizeArbeitnowJob).filter(Boolean) };
+            })
+          ]);
+          const namedSources = sources.map((result, index) => ({result, name: ["Remotive", "Arbeitnow"][index]}));
+          const successful = namedSources.filter(item => item.result.status === "fulfilled").map(item => item.result.value);
+          const failed = namedSources.filter(item => item.result.status === "rejected");
+          if (!successful.length) throw new Error(failed.map(item => item.result.reason.message).join(" "));
+          const byUrl = new Map(successful.flatMap(result => result.jobs).map(job => [job.url, job]));
+          if (failed.length && feed) {
+            const failedNames = failed.map(item => item.name);
+            feed.jobs.filter(job => failedNames.includes(job.source)).forEach(job => {
+              if (!byUrl.has(job.url)) byUrl.set(job.url, job);
+            });
+          }
+          const jobs = Array.from(byUrl.values());
+          jobFeed = { fetchedAt: new Date().toISOString(), jobs };
+          jobFeedError = failed.length ? failed.map(item => item.name + " unavailable: " + item.result.reason.message).join(" ") : "";
+          try {
+            localStorage.setItem(JOB_FEED_CACHE, JSON.stringify(jobFeed));
+            $("#opportunity-feed-status").textContent = failed.length
+              ? "Some job links may be missing: " + jobFeedError
+              : jobs.length ? "" : "No live job links are available from these feeds right now.";
+          } catch (error) {
+            $("#opportunity-feed-status").textContent = "Live job links loaded, but could not be saved in this browser.";
+          }
+          renderJobListings();
+        } catch (error) {
+          jobFeedError = "Could not load live job links: " + error.message;
+          $("#opportunity-feed-status").textContent = feed
+            ? jobFeedError + " Showing saved links instead."
+            : jobFeedError + " Check your connection and try again.";
+          renderJobListings();
+        } finally {
+          jobFeedRequest = null;
+        }
+      })();
+      return jobFeedRequest;
     }
     function renderApplicationTips() {
       const job = state.plan.job || "this role", fam = family(job);
@@ -440,7 +994,7 @@
       const letter = document.createElement("div"); letter.className = "course";
       letter.innerHTML = "<div class=\"course-title\">Cover-letter starter</div><p>“" + escapeHTML(examples[1]) + " I’d be glad to bring that approach to the " + escapeHTML(job) + " role.”</p>";
       box.append(tip, letter);
-      const coffee = $("#coffee-tips"); coffee.innerHTML = "<p><strong>Who to invite:</strong> a recent graduate in " + escapeHTML(familyName(job)) + " and a professional in " + escapeHTML(job) + " work.</p><p><strong>Try asking:</strong> “What surprised you about the role?” “Which skill would you practise first?” “What does a strong first month look like?”</p><p class=\"hint\">Keep it to 15 minutes, and don’t ask for confidential information.</p>";
+      const coffee = $("#coffee-tips"); coffee.innerHTML = "<p><strong>Aim for 3 good chats:</strong> prioritize meaningful 15-minute conversations over a long list of quick or shallow ones.</p><p><strong>Who to invite:</strong> a recent graduate in " + escapeHTML(familyName(job)) + " and two people doing " + escapeHTML(job) + " work.</p><p><strong>Try asking:</strong> “What surprised you about the role?” “Which skill would you practise first?” “What does a strong first month look like?”</p><p class=\"hint\">A single strong connection can help you land your dream job. Be genuine, listen closely and follow up with thanks.</p>";
       const courses = {
         banking:["Free online lessons: accounting fundamentals and introductory financial modeling","Mini-project: make a fictional DCF model with a few transparent assumptions."],
         finance:["Free online lessons: finance fundamentals and introductory statistics","Mini-project: compare three fictional budget scenarios and chart the trade-offs."],
@@ -461,17 +1015,29 @@
     }
     function fillPlanForm() {
       $("#job-title").value = state.plan.job;
+      $("#company").value = state.plan.company || "";
       $("#region").value = state.plan.region;
+      $("#preferred-location").value = state.plan.location || "";
+      $("#experience-level").value = state.plan.experienceLevel || "";
       $("#position-type").value = state.plan.position;
       $("#start-term").value = state.plan.term;
       $("#confirmed-date").value = state.plan.confirmedDate;
+      $("#interview-date").value = state.plan.interviewDate || "";
+      $("#job-description").value = state.plan.jobDescription || "";
+      $("#resume-context").value = state.plan.resumeContext || "";
       renderPlan();
     }
     function collectPlan() {
       state.plan.job = $("#job-title").value.trim();
+      state.plan.company = $("#company").value.trim();
       state.plan.region = $("#region").value;
+      state.plan.location = $("#preferred-location").value.trim();
+      state.plan.experienceLevel = $("#experience-level").value.trim();
       state.plan.position = $("#position-type").value;
       state.plan.term = $("#start-term").value;
+      state.plan.interviewDate = $("#interview-date").value;
+      state.plan.jobDescription = $("#job-description").value.trim();
+      state.plan.resumeContext = $("#resume-context").value.trim();
       save(); renderPlan(); toast("Your plan is up to date.");
     }
     function showPage(id) {
@@ -488,6 +1054,7 @@
     function getQuizQuestions(job, round, notes) {
       const fam = family(job);
       const selectedTopics = state.practice.difficult;
+      const focusTopic = state.practice.focusTopic;
       const common = COMMON_BY_ROUND[round] || [];
       const counts = state.practice.missed || {};
       const reportedCounts = reportsCounts();
@@ -501,7 +1068,7 @@
         const isReported = reportCount >= 4;
         const noteBoost = topic.toLowerCase().split(/[ &/]+/).some(word => word.length > 3 && noteWords.includes(word));
         return {topic, score:(isCommon?2:0)+(isReported?2:0)+(isDifficult?3:0)+(missed*2)+(noteBoost?1:0), isCommon, isReported, reportCount, isDifficult, missed, noteBoost, index};
-      }).sort((a,b) => b.score-a.score || a.index-b.index);
+      }).sort((a,b) => Number(b.topic === focusTopic)-Number(a.topic === focusTopic) || b.score-a.score || a.index-b.index);
       const questionMap = questionLibrary(fam);
       return scored.slice(0,3).map((item, index) => {
         const question = questionMap[item.topic] || {
@@ -526,10 +1093,10 @@
         "Role motivation": {prompt:"What interests you about this " + familyName(currentJob()) + " role, and what would you hope to learn?",answer:"Connect a genuine interest to the work itself and to one skill or experience you bring. Be specific about what you hope to learn; avoid claiming to know details you have not verified.",points:["Name a specific part of the work","Connect it to relevant experience","State a realistic learning goal"]},
         "Problem solving": {prompt:"Describe how you would approach an unfamiliar problem with an unclear starting point.",answer:"Clarify the goal and constraints, break the work into manageable questions, state assumptions, test the most important one and communicate progress.",points:["Clarify goals and constraints","Break down the problem and state assumptions","Test, then communicate findings"]},
         "Relevant experience": {prompt:"Which experience best prepares you for this role, even if it came from a class or volunteer project?",answer:"Choose one relevant example, explain your own contribution and connect the skill you built to a responsibility in the role.",points:["Choose a relevant example","Be clear about your contribution","Connect it to the role"]},
-        "Discounted cash flow": {prompt:"A fictional company expects $100 in free cash flow next year, growing 3% each year. In plain language, how would you estimate its value today?",answer:"Forecast free cash flow over an explicit period, discount those cash flows using a rate reflecting risk and time value, estimate a terminal value (often using a steady-growth assumption), discount it too, then consider cash, debt and shares to move from enterprise to equity value. State that assumptions drive the result.",points:["Forecast explicit cash flows","Discount using a rate that reflects time and risk","Estimate and discount terminal value","State assumptions and distinguish enterprise from equity value"]},
-        "Accounting links": {prompt:"If depreciation expense rises by $10, what happens to the three financial statements, assuming a 25% tax rate?",answer:"On the income statement, pre-tax income falls by $10 and net income falls by $7.5. On the cash flow statement, add back the $10 non-cash depreciation, so cash from operations rises by $2.5 from the tax shield. On the balance sheet, cash rises by $2.5, PP&E falls by $10, and retained earnings fall by $7.5; both sides decline net by $7.5.",points:["Net income falls by $7.5 after tax","Add back non-cash depreciation; cash rises by $2.5","PP&E falls by $10 and retained earnings by $7.5","Balance sheet balances"]},
-        "Valuation": {prompt:"Name two ways to value a fictional business and one situation where each method is useful.",answer:"A discounted cash flow values expected cash generation using explicit assumptions and is useful when forecasts are meaningful. Comparable-company multiples use market pricing for similar businesses and are useful as a relative benchmark. Explain limitations and avoid presenting one output as certain.",points:["Describe a cash-flow-based method","Describe a market-comparable method","Explain a limitation or assumption"]},
-        "Valuation multiples": {prompt:"A fictional peer trades at 10× EBITDA. What does that multiple tell you, and what should you check before applying it?",answer:"It says enterprise value is ten times the peer’s EBITDA, based on the chosen period. Check business comparability, growth, margins, leverage, accounting and whether EBITDA is normalized. A multiple is a reference point, not a standalone answer.",points:["Relate enterprise value to EBITDA","Check comparability and financial differences","Treat it as a benchmark, not a complete valuation"]},
+        "Discounted cash flow": {prompt:"In simple terms, how does a discounted cash flow (DCF) estimate a company's value?",answer:"Estimate the cash the company may generate in future years and convert that cash to today's value using a discount rate. Add a value for cash flows beyond the forecast period. This estimates enterprise value; adjust for debt and cash to estimate equity value.",points:["Estimate future cash flows","Convert future cash to today's value","Add later cash flows and adjust for debt and cash"]},
+        "Accounting links": {prompt:"If depreciation increases by $10, what happens to the three financial statements? Assume a 25% tax rate.",answer:"Pre-tax income falls by $10 and net income falls by $7.50. On the cash flow statement, depreciation is added back, so cash rises by $2.50 from the tax savings. On the balance sheet, cash rises by $2.50, equipment value falls by $10, and retained earnings fall by $7.50.",points:["Net income falls by $7.50 after tax","Add depreciation back; cash rises by $2.50","Equipment falls by $10 and retained earnings by $7.50"]},
+        "Valuation": {prompt:"What are three common ways to estimate a company's value?",answer:"A discounted cash flow estimates value from expected future cash. Comparable-company analysis looks at how similar public companies are valued. Precedent transactions look at prices paid for similar companies in past deals. Each method depends on assumptions and comparability.",points:["Describe a discounted cash flow","Describe comparable companies","Describe past transactions and note assumptions"]},
+        "Valuation multiples": {prompt:"What does a company's EV/EBITDA multiple compare?",answer:"It compares enterprise value with EBITDA, a measure of operating earnings before interest, taxes, depreciation and amortization. Analysts compare it with similar companies, while checking differences in growth, risk and accounting.",points:["Define enterprise value divided by EBITDA","Compare with similar companies","Check differences before drawing a conclusion"]},
         "Enterprise value": {prompt:"A fictional company has $80 million equity value, $25 million debt and $5 million cash. What is enterprise value, and why?",answer:"Enterprise value is $100 million: equity value plus debt minus cash. It represents the value of the operating business available to all capital providers, under this simplified calculation.",points:["Add debt to equity value","Subtract cash","Explain it reflects value to all capital providers"]},
         "Financial statements": {prompt:"How do the income statement, balance sheet and cash flow statement connect?",answer:"Net income from the income statement flows into retained earnings and begins the cash flow statement. The cash flow statement adjusts for non-cash items and working capital, then reconciles the period’s cash change to the balance-sheet cash balance.",points:["Net income links to retained earnings","Cash flow adjusts for non-cash items and working capital","Cash change reconciles to the balance sheet"]},
         "SQL": {prompt:"You have an orders table with customer_id and amount. How would you find the five customers with the highest total spend?",answer:"Group rows by customer_id, sum amount, order by that sum descending and return five rows. In SQL: SELECT customer_id, SUM(amount) AS total_spend FROM orders GROUP BY customer_id ORDER BY total_spend DESC LIMIT 5; Confirm whether refunds or duplicate orders need treatment.",points:["Group by customer","Sum the amount","Sort descending and limit to five","Check data quality and business rules"]},
@@ -552,7 +1119,7 @@
         "Visualization & insight": {prompt:"You have one chart to explain a trend to a busy decision-maker. How would you choose and present it?",answer:"Start with the decision or question, choose a chart that shows the relevant comparison over time, label units and source, make the main finding clear and include a caveat if data is incomplete.",points:["Start from the decision question","Choose and label an appropriate chart","State the finding and caveat"]},
         "Excel & analysis": {prompt:"You receive a spreadsheet with inconsistent categories and need a quick summary. What would you do before reporting a result?",answer:"Inspect structure and missing values, standardize categories, check duplicates and totals, summarize with a pivot or formula, and trace a sample back to source rows before sharing.",points:["Inspect and clean categories","Summarize with a suitable method","Validate against source data"]},
         "Markets & business judgment": {prompt:"Choose a recent broad market or business trend you have noticed. How might it affect a fictional company?",answer:"State the trend and source at a high level, explain the transmission to demand, costs or risk, identify who benefits or is exposed, and name data you would monitor. Avoid making a confident forecast without evidence.",points:["Describe a trend and its relevance","Explain a plausible business impact","Name evidence to monitor"]},
-        "Accretion / dilution": {prompt:"In broad terms, what can make an acquisition increase or reduce the buyer’s earnings per share?",answer:"Compare the target’s earnings contribution with financing costs and any new shares issued, then consider synergies, purchase accounting and integration costs. The result depends on assumptions and is not the same as value creation.",points:["Compare earnings contribution and financing","Consider shares, synergies and transaction costs","Distinguish EPS impact from value creation"]}
+        "Accretion / dilution": {prompt:"What does it mean if an acquisition is accretive or dilutive?",answer:"An acquisition is accretive if the buyer's earnings per share increase, and dilutive if they decrease. The result depends on the target's earnings, the purchase price, how the deal is financed and any expected savings or costs.",points:["Accretive means earnings per share increase","Dilutive means earnings per share decrease","Mention price, financing and deal costs"]}
       };
       return base;
     }
@@ -560,7 +1127,20 @@
       $("#practice-job").value = state.practice.job;
       $("#round").value = state.practice.round;
       $("#recruiter-notes").value = state.practice.notes;
-      renderTopics($("#topic-picks"), topicsFor(state.practice.job || state.plan.job), state.practice.difficult);
+      const topics = topicsFor(state.practice.job || state.plan.job);
+      const focusSelect = $("#focus-topic");
+      const focusTopic = state.practice.focusTopic;
+      focusSelect.replaceChildren(new Option("All topics (adaptive)", ""));
+      topics.forEach(topic => focusSelect.add(new Option(topic, topic)));
+      if (topics.includes(focusTopic)) {
+        focusSelect.value = focusTopic;
+      } else {
+        state.practice.focusTopic = "";
+      }
+      $("#focus-topic-status").textContent = state.practice.focusTopic
+        ? "Your next quiz and mock interview will start with " + state.practice.focusTopic + "."
+        : "Choose a topic to make it the first question in your next session.";
+      renderTopics($("#topic-picks"), topics, state.practice.difficult);
       $("#topic-picks").onchange = () => {
         state.practice.difficult = $$("#topic-picks input:checked").map(i => i.value);
         save();
@@ -574,6 +1154,7 @@
       state.practice.job = $("#practice-job").value.trim() || state.plan.job || "General";
       state.practice.round = $("#round").value;
       state.practice.notes = $("#recruiter-notes").value.trim();
+      state.practice.focusTopic = $("#focus-topic").value;
       state.practice.difficult = $$("#topic-picks input:checked").map(i => i.value);
       save();
     }
@@ -609,18 +1190,50 @@
         revealQuiz(card, questions, answers, mode);
       });
     }
+    function assessAnswer(question, answer) {
+      const answerWords = new Set((answer.toLowerCase().match(/[a-z0-9]+/g) || []).filter(word => word.length > 3));
+      const coveredPoints = question.points.filter(point => {
+        const keywords = (point.toLowerCase().match(/[a-z0-9]+/g) || []).filter(word => word.length > 3);
+        return keywords.some(keyword => Array.from(answerWords).some(word => word.startsWith(keyword) || keyword.startsWith(word)));
+      });
+      const coveredSet = new Set(coveredPoints);
+      const missingPoints = question.points.filter(point => !coveredSet.has(point));
+      const wordCount = answer.split(/\s+/).filter(Boolean).length;
+      return {
+        passed: coveredPoints.length >= Math.ceil(question.points.length / 2),
+        missingPoints,
+        wordCount,
+        tooLong: wordCount > 120
+      };
+    }
+    function renderAnswerFeedback(question, assessment) {
+      const result = document.createElement("div");
+      result.className = "feedback" + (assessment.passed && !assessment.tooLong ? "" : " incorrect");
+      const strong = document.createElement("strong");
+      strong.textContent = assessment.tooLong
+        ? "This answer was " + assessment.wordCount + " words. Try a more concise response."
+        : assessment.passed ? "You covered several key points — compare with the model answer."
+        : "Some important points may be missing. Review the model answer.";
+      const answerLabel = document.createElement("strong");
+      answerLabel.textContent = assessment.tooLong ? "Try this concise model answer:" : "Model answer / key ideas:";
+      const explanation = document.createElement("p"); explanation.textContent = question.answer;
+      const points = document.createElement("p"); points.className = "hint"; points.textContent = "Key points: " + question.points.join(" · ");
+      const missing = document.createElement("p"); missing.className = "hint";
+      missing.textContent = "Points to revisit: " + (assessment.missingPoints.length ? assessment.missingPoints.join(" · ") : "none flagged by the quick check.");
+      const note = document.createElement("p"); note.className = "hint";
+      note.textContent = "This quick check looks for key words, so compare with the sample even if you phrased your answer differently.";
+      result.append(strong,answerLabel,explanation,points,missing,note);
+      return result;
+    }
     function revealQuiz(card, questions, answers, mode) {
       const form = $("form",card); const boxes = $$(".question",form);
       let missedCount = 0; const review = [];
       questions.forEach((q,i) => {
-        const answer = answers[i]; const passed = answer.length >= 100 && q.points.slice(0,2).some(p => answer.toLowerCase().split(/\W+/).some(word=>word.length>4 && p.toLowerCase().includes(word)));
-        if (!passed) { state.practice.missed[q.topic] = (state.practice.missed[q.topic]||0)+1; missedCount++; }
-        review.push({topic:q.topic, answer, passed, prompt:q.prompt, missedPoints:passed?[]:q.points});
-        const result = document.createElement("div"); result.className = "feedback" + (passed ? "" : " incorrect");
-        const strong = document.createElement("strong"); strong.textContent = passed ? "Good start — keep sharpening it." : "A useful topic to revisit.";
-        const explanation = document.createElement("p"); explanation.textContent = q.answer;
-        const points = document.createElement("p"); points.className = "hint"; points.textContent = "Key points: " + q.points.join(" · ");
-        result.append(strong,explanation,points); boxes[i].append(result);
+        const answer = answers[i];
+        const assessment = assessAnswer(q,answer);
+        if (!assessment.passed) { state.practice.missed[q.topic] = (state.practice.missed[q.topic]||0)+1; missedCount++; }
+        review.push({topic:q.topic, answer, passed:assessment.passed, prompt:q.prompt, missedPoints:assessment.missingPoints, wordCount:assessment.wordCount, tooLong:assessment.tooLong});
+        boxes[i].append(renderAnswerFeedback(q,assessment));
         const area = $("textarea",boxes[i]); area.disabled = true;
       });
       const submit = $("button[type=submit]",form); submit.disabled = true;
@@ -646,28 +1259,111 @@
         box.append(p);
       });
     }
+    function roundGuideQuestions(job, round) {
+      const role=job||"your target role";
+      const company=state.plan.company||"the target company";
+      const fam=family(job);
+      const technicalByFamily={
+        banking:[
+          {topic:"Accounting foundations",prompt:"Walk through how the three financial statements connect for "+role+" work.",answer:"Build your answer around one actual transaction or a specific responsibility from the posting, then explain net income, cash flow, and balance-sheet effects.",points:["Use a real or clearly fictional transaction","Explain links between all three statements","Connect the mechanics to the role"]},
+          {topic:"Valuation",prompt:"Compare two valuation methods you would use for a company relevant to "+role+".",answer:"Choose methods supported by the job description and explain assumptions, comparability, and when each method is most useful.",points:["Name a DCF and a market method","Explain assumptions and limitations","Tie the choice to evidence"]},
+          {topic:"Market judgment",prompt:"How would a recent industry event affect an example company or sector?",answer:"Use a verified current industry development and trace its likely effects through demand, costs, margins, and risk.",points:["Cite a verified trend","Trace the business impact","Avoid unsupported forecasts"]}
+        ],
+        accounting:[
+          {topic:"Reconciliations",prompt:"A ledger control total differs from the supporting record. Explain your "+role+" approach.",answer:"Ground the answer in a real reconciliation or accounting project, including source verification and escalation.",points:["Verify scope and source","Trace likely causes","Document and escalate"]}
+        ],
+        software:[
+          {topic:"Data structures",prompt:"Choose a data structure for a real feature you could build for "+role+", and explain the trade-off.",answer:"Use a project or the job description as context, then discuss lookup, insertion, memory, and worst-case behavior.",points:["State the operation you optimize","Explain complexity","Name the trade-off"]},
+          {topic:"System design",prompt:"Design a small service used in "+role+" work. What requirements would you clarify first?",answer:"Tie components to the position's likely users and scale, rather than describing a generic distributed system.",points:["Clarify users and constraints","Sketch core components","Address trade-offs"]}
+        ],
+        data:[
+          {topic:"SQL",prompt:"Write a query approach that answers a decision relevant to "+role+".",answer:"Start from the real business question in the posting or a past project, define joins and filters, then validate the output.",points:["State the decision question","Explain joins, grouping and filters","Check edge cases"]},
+          {topic:"Statistics",prompt:"How would you determine whether a change improved an outcome for this role?",answer:"Use an actual project or a clearly fictional scenario, with an appropriate comparison, guardrails, and uncertainty.",points:["Define outcome and baseline","Choose a fair test","Discuss uncertainty"]}
+        ],
+        engineering:[
+          {topic:"Technical fundamentals",prompt:"Compare two plausible design choices for "+role+" work.",answer:"Use your resume project or a constraint stated in the job description, then compare requirements and evidence.",points:["Define requirements","Compare relevant properties","Support the choice with a test"]}
+        ],
+        business:[
+          {topic:"Case structure",prompt:"A metric has declined. How would you diagnose it for "+role+" work?",answer:"Use a real business problem from your experience or a clearly stated scenario and structure the drivers.",points:["Clarify scope","Split the metric into drivers","Prioritize evidence"]}
+        ]
+      };
+      const families={
+        behavioral:[
+          {topic:"Conflict",prompt:"Tell me about a time you disagreed with a teammate in work related to "+role+". What did you do?",answer:"Use a real Situation–Task–Action–Result example. Make your own reasoning and respectful action specific.",points:["Name the disagreement and stakes","Explain your own action","Share an observable outcome"]},
+          {topic:"Leadership",prompt:"Describe a time you influenced others without formal authority.",answer:"Draw from school, work, or a project in your resume and show how you earned alignment.",points:["Set up the goal","Explain influence and listening","Describe the result"]},
+          {topic:"Feedback",prompt:"Tell me about feedback that changed how you approached a task.",answer:"Choose a specific piece of feedback and explain the behavior you changed and the result.",points:["Explain the original situation","Describe the change","Reflect on the result"]},
+          {topic:"Failure",prompt:"Describe a meaningful mistake or project setback. What did you learn?",answer:"Use a real example, take responsibility, and emphasize a concrete improvement you made afterward.",points:["Be honest about responsibility","Explain recovery","Show lasting learning"]},
+          {topic:"Prioritization",prompt:"Tell me about a time several priorities competed for your attention.",answer:"Use a specific deadline or trade-off and explain how you selected the highest-value work.",points:["Clarify constraints","Explain the priority method","Describe the outcome"]},
+          {topic:"Teamwork",prompt:"Give an example of a team success that depended on your contribution.",answer:"Make your individual responsibility explicit while also showing how you supported the team.",points:["State the team goal","Clarify your contribution","Explain measurable or observable success"]}
+        ],
+        "case-study":[
+          {topic:"Structure",prompt:"A fictional customer metric for "+role+" has fallen. How would you diagnose it?",answer:"Clarify scope, structure the likely drivers, ask for data, and recommend a test.",points:["Define the metric and period","Build a driver tree","Prioritize with evidence"]},
+          {topic:"Market sizing",prompt:"Estimate demand for a product or service connected to "+role+".",answer:"Use a clear population funnel and transparent assumptions, then sanity-check the result.",points:["State your estimation method","Name assumptions","Present a reasonable range"]},
+          {topic:"Profitability",prompt:"Revenue is increasing but profit is falling. What would you investigate?",answer:"Separate volume and price from fixed and variable costs, then prioritize the largest evidence-backed driver.",points:["Separate revenue drivers","Analyze costs and mix","Recommend a test"]},
+          {topic:"Prioritization",prompt:"A team has too many ideas and limited resources. How would you choose?",answer:"Set decision criteria, score options with available evidence, and explain uncertainty and trade-offs.",points:["Name decision criteria","Compare options","State implementation risks"]},
+          {topic:"Recommendation",prompt:"Give a recommendation for a fictional "+familyName(job)+" client with limited data.",answer:"State assumptions, give a direction, explain trade-offs, and identify the data that would change your decision.",points:["Take a clear position","Support it with evidence","Name what would change it"]},
+          {topic:"Synthesis",prompt:"Summarize a complex analysis for an executive in 60 seconds.",answer:"Lead with the decision and conclusion, then give only the evidence and caveat needed to act.",points:["Start with the recommendation","Use one or two evidence points","State the caveat"]}
+        ],
+        screening:[
+          {topic:"Screening",prompt:"Give me your 60–90 second introduction for "+role+".",answer:"Build it from your actual education or experience, one relevant achievement, and one clear reason for this role.",points:["State your current background","Choose one relevant achievement","Connect to the role"]},
+          {topic:"Motivation",prompt:"Why do you want "+role+"?",answer:"Use one genuine interest, one real experience, and a specific part of the work.",points:["Name the work you find compelling","Connect to your experience","Avoid repeating the posting"]},
+          {topic:"Company",prompt:"Why "+company+"?",answer:"Use only verified company information, such as official work areas, recent public initiatives, or team structure.",points:["Choose one verified reason","Explain why it matters to you","Avoid invented claims"]},
+          {topic:"Industry",prompt:"Why this industry rather than a different field?",answer:"Explain a personal pattern or experience that led you to the industry, supported by evidence.",points:["Use an authentic reason","Add specific evidence","Describe the next contribution"]},
+          {topic:"Fit",prompt:"What evidence in your resume makes you likely to succeed in this role?",answer:"Choose one or two strongest examples and map them directly to the posted responsibilities.",points:["Use resume evidence","Match a requirement","Quantify or clarify impact"]},
+          {topic:"Readiness",prompt:"What is your timeline and availability for "+role+"?",answer:"Prepare an exact answer based on your schedule, including start dates, work authorization, and location constraints.",points:["Be specific and accurate","Name any constraints","Confirm flexibility if true"]}
+        ],
+        "final-round":[
+          {topic:"Leadership",prompt:"How would you create trust with a new "+role+" team?",answer:"Use a real team transition or project and explain how you would listen, establish expectations, and earn credibility.",points:["Name the team context","Describe listening and expectations","Give a measurable or observable sign"]},
+          {topic:"Values",prompt:"What is the hardest trade-off you have made in work or study?",answer:"Choose a real decision, explain the competing values, and make your own judgment explicit.",points:["Explain the competing priorities","State your decision","Reflect on the consequence"]},
+          {topic:"Strategic judgment",prompt:"What would you prioritize during your first 90 days?",answer:"Use the job description and verified company context to propose learning, relationships, and early outcomes.",points:["Separate listening from action","Tie priorities to the role","Set realistic early outcomes"]},
+          {topic:"Team impact",prompt:"How would a former teammate describe you?",answer:"Support your answer with a real example and avoid vague traits without evidence.",points:["Choose a genuine pattern","Give one example","Connect it to this team"]},
+          {topic:"Challenge",prompt:"What would you find most difficult about "+role+"?",answer:"Identify a real growth edge, explain how you will prepare, and use evidence that you can close the gap.",points:["Be honest but constructive","Name a preparation plan","Show evidence of growth"]},
+          {topic:"Decision",prompt:"What questions should we ask about "+company+" before deciding whether to join?",answer:"Ask thoughtful questions about team priorities, success metrics, development, and how the role contributes to company goals.",points:["Ask about role priorities","Ask how success is measured","Use verified company context"]}
+        ]
+      };
+      if(round==="technical"){
+        const tech=(technicalByFamily[fam]||[]).concat([
+          {topic:"Problem solving",prompt:"How would you approach an unfamiliar problem in "+role+"?",answer:"Clarify the goal and constraints, state assumptions, decompose the problem, test the highest-risk issue, and communicate results.",points:["Clarify the goal","State assumptions","Explain testing and communication"]},
+          {topic:"Role skills",prompt:"Which skill from the job description have you demonstrated most clearly?",answer:"Choose a real resume example and map your own contribution to a requirement in the description.",points:["Match the posted requirement","Describe your own contribution","Give a concrete result"]},
+          {topic:"Learning",prompt:"Describe a technical concept you learned quickly for a project.",answer:"Use a real learning example and explain both the approach and how you verified understanding.",points:["Name the concept","Explain the learning method","Verify through application"]}
+        ]);
+        return tech;
+      }
+      return families[round]||families.behavioral;
+    }
     function renderGuide() {
       const job=$("#guide-job").value.trim()||state.practice.job||state.plan.job||"";
       const round=$("#guide-round").value;
-      const topics=topicsFor(job);
+      const roundLabel=$("#guide-round").selectedOptions[0].textContent;
       const content=$("#guide-content"); content.replaceChildren();
-      const questions=questionLibrary(family(job));
-      topics.forEach(topic=>{
-        const q=questions[topic]||{prompt:"Tell me how you would approach "+topic.toLowerCase()+" in a new role.",answer:"A good response is specific, structured and grounded in evidence. Explain your approach, trade-offs and what you would learn from the result.",points:["Clarify the goal","Explain a practical approach","Reflect on result or trade-offs"]};
+      const questions=roundGuideQuestions(job,round);
+      questions.forEach(q=>{
         const article=document.createElement("article"); article.className="card";
-        const pill=document.createElement("span"); pill.className="pill green"; pill.textContent=topic;
-        const roundNote=document.createElement("p"); roundNote.className="hint"; roundNote.textContent="Guide for "+round.toLowerCase()+" · "+familyName(job);
+        const pill=document.createElement("span"); pill.className="pill green"; pill.textContent=q.topic;
+        const roundNote=document.createElement("p"); roundNote.className="hint"; roundNote.textContent="Guide for "+roundLabel+" · "+familyName(job);
         const prompt=document.createElement("h3"); prompt.textContent=q.prompt;
         const sample=document.createElement("details"); sample.style.marginTop="12px";
-        const summary=document.createElement("summary"); summary.textContent="See a sample approach";
-        const answer=document.createElement("p"); answer.style.marginTop="10px"; answer.textContent=q.answer;
+        const summary=document.createElement("summary"); summary.textContent="See a personalized approach";
+        const answer=document.createElement("p"); answer.style.marginTop="10px"; answer.textContent=q.answer+" Personalize it with the user's real resume, verified company information, and the job description.";
         const points=document.createElement("p"); points.className="hint"; points.textContent="Look for: "+q.points.join(" · ");
         sample.append(summary,answer,points); article.append(pill,roundNote,prompt,sample); content.append(article);
       });
     }
-    function reportTopicNames(job) {
-      const fam=family(job);
-      return Array.from(new Set([].concat(topicsFor(job), ["Communication","Problem solving","Role motivation","Behavioural stories"])));
+    function reportTopicNames(job, round) {
+      const byRound = {
+        technical: COMMON_BY_ROUND.Technical,
+        behavioral: COMMON_BY_ROUND.Behavioural,
+        "case-study": COMMON_BY_ROUND["Case study"],
+        screening: COMMON_BY_ROUND["First / recruiter screen"],
+        "final-round": COMMON_BY_ROUND["Final round"]
+      };
+      const roleTopics = topicsFor(job).filter(topic => topic !== "Behavioural stories");
+      return Array.from(new Set([].concat(byRound[round] || [], round === "technical" ? roleTopics : [])));
+    }
+    function updateReportTopics() {
+      const job = $("#report-job").value.trim() || currentJob();
+      const round = $("#report-round").value;
+      renderTopics($("#report-topics"), reportTopicNames(job, round), []);
     }
     function reportsCounts() {
       const counts={};
@@ -676,9 +1372,9 @@
       return counts;
     }
     function renderCommunity() {
-      const job=$("#report-job").value.trim()||currentJob();
-      renderTopics($("#report-topics"),reportTopicNames(job),[]);
-      $("#report-job").oninput=()=>renderTopics($("#report-topics"),reportTopicNames($("#report-job").value),[]);
+      updateReportTopics();
+      $("#report-job").oninput=updateReportTopics;
+      $("#report-round").onchange=updateReportTopics;
       const counts=reportsCounts();
       const entries=Object.keys(counts).map(t=>[t,counts[t]]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
       const max=entries.length?entries[0][1]:1, box=$("#topic-rankings"); box.replaceChildren();
@@ -699,6 +1395,36 @@
       save(); renderCommunity(); $("#report-confirm").textContent="Thanks — your anonymous sample report changed the topic counts above. It stays in this browser.";
       return true;
     }
+    function findAlumni() {
+      const school=$("#alumni-school").value.trim();
+      const role=$("#alumni-role").value.trim();
+      if(!school||!role){toast("Enter both your school and the role you want first.");return;}
+      const searchURL=new URL("https://www.linkedin.com/search/results/people/");
+      searchURL.searchParams.set("keywords",school+" alumni "+role);
+      const results=$("#alumni-results"); results.replaceChildren();
+      const card=document.createElement("article"); card.className="card";
+      const heading=document.createElement("h2"); heading.textContent="Alumni search";
+      const details=document.createElement("p"); details.className="muted"; details.textContent="Search LinkedIn for people connected to "+school+" and "+role+". You can refine the results with LinkedIn’s school filter.";
+      const link=document.createElement("a"); link.className="button"; link.href=searchURL.href; link.target="_blank"; link.rel="noopener noreferrer"; link.textContent="Open LinkedIn people results";
+      const messageLabel=document.createElement("label"); messageLabel.htmlFor="alumni-message"; messageLabel.textContent="Message draft";
+      const message=document.createElement("textarea"); message.id="alumni-message"; message.readOnly=true;
+      message.value="Hi [Name], I'm a student at "+school+" exploring "+role+". I came across your profile and would love to hear about your path and any advice for someone interested in this field. If you're available for a brief chat, I'd really appreciate it. Thanks!";
+      message.style.margin="10px 0";
+      const actions=document.createElement("div"); actions.className="inline";
+      const copy=document.createElement("button"); copy.type="button"; copy.className="button secondary"; copy.textContent="Copy message";
+      const status=document.createElement("span"); status.className="hint"; status.setAttribute("aria-live","polite");
+      copy.addEventListener("click",async()=>{
+        try{
+          if(!navigator.clipboard) throw new Error("Clipboard access is unavailable.");
+          await navigator.clipboard.writeText(message.value);
+          status.textContent="Message copied. Personalize the name before sending.";
+        }catch(e){
+          status.textContent="Could not copy automatically. Select the draft above and copy it manually.";
+        }
+      });
+      actions.append(copy,status);
+      card.append(heading,details,link,messageLabel,message,actions); results.append(card);
+    }
     function startMock() {
       capturePractice();
       const q=getQuizQuestions(state.practice.job,state.practice.round,state.practice.notes)[0];
@@ -708,51 +1434,114 @@
       const heading=document.createElement("h2"); heading.textContent=q.topic;
       const why=document.createElement("p"); why.className="hint"; why.textContent="Picked because: "+q.why+".";
       const prompt=document.createElement("p"); prompt.style.fontWeight="750"; prompt.textContent=q.prompt;
-      const answer=document.createElement("textarea"); answer.placeholder="Type your answer, or use the microphone button to dictate…";
-      answer.setAttribute("aria-label","Mock interview answer");
+      const answer=document.createElement("textarea"); answer.placeholder="Your spoken answer will appear here."; answer.readOnly=true;
+      answer.setAttribute("aria-label","Transcript of your spoken mock interview answer");
+      answer.setAttribute("aria-live","polite");
       const controls=document.createElement("div"); controls.className="inline"; controls.style.margin="10px 0";
       const mic=document.createElement("button"); mic.className="button ghost small"; mic.type="button"; mic.textContent="🎙 Answer out loud";
-      const reveal=document.createElement("button"); reveal.className="button secondary small"; reveal.type="button"; reveal.textContent="Reveal sample answer";
-      controls.append(mic,reveal);
-      const speech=document.createElement("p"); speech.className="speech-note"; speech.textContent="Voice input depends on browser support and may use your browser’s speech service.";
-      const sample=document.createElement("div"); sample.className="feedback"; sample.hidden=true;
-      const sampleStrong=document.createElement("strong"); sampleStrong.textContent="Sample answer / approach";
-      const sampleText=document.createElement("p"); sampleText.textContent=q.answer;
-      const checkTitle=document.createElement("p"); checkTitle.style.fontWeight="750"; checkTitle.textContent="Which key points did you cover?";
-      const pointList=document.createElement("ul"); pointList.className="key-points";
-      const pointChecks=q.points.map(point=>{
-        const li=document.createElement("li"); const label=document.createElement("label"); const input=document.createElement("input"); input.type="checkbox";
-        const span=document.createElement("span"); span.textContent=point; label.append(input,span); li.append(label); pointList.append(li); return input;
-      });
+      controls.append(mic);
+      const speech=document.createElement("p"); speech.className="speech-note"; speech.textContent="Your browser transcribes speech; no audio is saved. Listening continues through pauses until you select Stop listening.";
+      const answerFeedback=document.createElement("div"); answerFeedback.hidden=true;
       const saveMock=document.createElement("button"); saveMock.type="button"; saveMock.className="button"; saveMock.textContent="Save mock interview review";
-      sample.append(sampleStrong,sampleText,checkTitle,pointList);
-      card.append(eyebrow,heading,why,prompt,answer,controls,speech,sample,saveMock); stage.append(card);
-      reveal.addEventListener("click",()=>{sample.hidden=false;reveal.disabled=true;});
+      card.append(eyebrow,heading,why,prompt,answer,controls,speech,answerFeedback,saveMock); stage.append(card);
+      const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+      let recognizedAnswer="";
+      let shouldListen=false;
+      let recognition=null;
+      let restartTimer=0;
+      function finishListening(){
+        mic.textContent="🎙 Answer out loud";
+        answer.value=recognizedAnswer;
+        if(recognizedAnswer){
+          speech.textContent="Spoken answer captured. Review your feedback below.";
+          answerFeedback.replaceChildren(renderAnswerFeedback(q,assessAnswer(q,recognizedAnswer)));
+          answerFeedback.hidden=false;
+        }else{
+          speech.textContent="No clear speech was captured. Select the microphone to try again.";
+        }
+      }
+      if(!Recognition){
+        mic.disabled=true;
+        speech.textContent="Speech recognition is not available in this browser. Open this page in a browser with speech recognition to answer by voice.";
+      }
+      function startListening(){
+        if(!shouldListen||!Recognition)return;
+        const session=new Recognition();
+        recognition=session;
+        session.lang="en-US"; session.continuous=true; session.interimResults=true; session.maxAlternatives=1;
+        let interimAnswer="";
+        session.onstart=()=>{speech.textContent="Listening until you select Stop listening…";};
+        session.onresult=e=>{
+          const finalParts=[];
+          interimAnswer="";
+          for(let i=e.resultIndex;i<e.results.length;i++){
+            const result=e.results[i];
+            if(result.isFinal) finalParts.push(result[0].transcript.trim());
+            else interimAnswer+=result[0].transcript;
+          }
+          recognizedAnswer=[recognizedAnswer,...finalParts].filter(Boolean).join(" ");
+          answer.value=[recognizedAnswer,interimAnswer.trim()].filter(Boolean).join(" ");
+        };
+        session.onerror=e=>{
+          if(e.error==="no-speech"){
+            speech.textContent="No speech detected yet. Keep speaking; listening will continue.";
+            return;
+          }
+          shouldListen=false;
+          speech.textContent=e.error==="not-allowed"||e.error==="service-not-allowed"
+            ?"Microphone permission was denied. Allow microphone access and try again."
+            :e.error==="audio-capture"?"No microphone was found. Connect a microphone and try again."
+            :"Speech recognition failed. Select the microphone and try again.";
+        };
+        session.onend=()=>{
+          if(recognition===session) recognition=null;
+          answer.value=recognizedAnswer;
+          interimAnswer="";
+          if(shouldListen){
+            speech.textContent="Reconnecting speech recognition… Keep speaking; click Stop listening when finished.";
+            restartTimer=window.setTimeout(startListening,250);
+          }else{
+            finishListening();
+          }
+        };
+        try{session.start();}
+        catch(e){
+          shouldListen=false;
+          if(recognition===session) recognition=null;
+          mic.textContent="🎙 Answer out loud";
+          speech.textContent="Could not start speech recognition. Check microphone access and try again.";
+        }
+      }
       mic.addEventListener("click",()=>{
-        const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-        if(!Recognition){speech.textContent="Voice recognition is not available in this browser. You can type your answer instead.";return;}
-        const rec=new Recognition(); rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1;
-        mic.disabled=true; speech.textContent="Listening…";
-        rec.onresult=e=>{answer.value+=(answer.value?" ":"")+e.results[0][0].transcript;speech.textContent="Voice answer added. You can edit it before saving.";};
-        rec.onerror=()=>{speech.textContent="Couldn’t capture speech. Please type your answer instead.";};
-        rec.onend=()=>{mic.disabled=false;};
-        rec.start();
+        if(shouldListen){
+          shouldListen=false;
+          window.clearTimeout(restartTimer);
+          mic.textContent="Finishing…";
+          speech.textContent="Finishing your spoken answer…";
+          if(recognition) recognition.stop();
+          else finishListening();
+          return;
+        }
+        shouldListen=true;
+        mic.textContent="Stop listening";
+        startListening();
       });
       saveMock.addEventListener("click",()=>{
-        const response=answer.value.trim();
-        if(!response){toast("Type or dictate an answer before saving.");return;}
-        if(sample.hidden){toast("Reveal the sample answer and review the key points before saving.");return;}
-        const missed=q.points.filter((_,i)=>!pointChecks[i].checked);
-        if(!sample.hidden&&missed.length) state.practice.missed[q.topic]=(state.practice.missed[q.topic]||0)+1;
-        state.practice.history.unshift({date:new Date().toISOString(),mode:"mock",job:state.practice.job,round:state.practice.round,results:[{topic:q.topic,answer:response,passed:!missed.length,prompt:q.prompt,missedPoints:missed}]});
+        const response=recognizedAnswer.trim();
+        if(!recognizedAnswer){toast("Speak an answer before saving your review.");return;}
+        if(shouldListen){toast("Stop listening before saving your review.");return;}
+        const assessment=assessAnswer(q,response);
+        if(!assessment.passed) state.practice.missed[q.topic]=(state.practice.missed[q.topic]||0)+1;
+        state.practice.history.unshift({date:new Date().toISOString(),mode:"mock",job:state.practice.job,round:state.practice.round,results:[{topic:q.topic,answer:response,passed:assessment.passed,prompt:q.prompt,missedPoints:assessment.missingPoints,wordCount:assessment.wordCount,tooLong:assessment.tooLong}]});
         state.practice.history=state.practice.history.slice(0,20);save();renderHistory();toast("Mock interview review saved.");
         saveMock.disabled=true;saveMock.textContent="Review saved";
       });
     }
     function init() {
       initNavigation(); fillPlanForm();
+      renderCompanyCareerLinks();
       $("#build-plan").addEventListener("click",collectPlan);
-      ["job-title","region","position-type","start-term"].forEach(id=>$("#"+id).addEventListener(id==="job-title"?"change":"change",collectPlan));
+      ["job-title","company","region","preferred-location","experience-level","position-type","start-term","interview-date","job-description","resume-context"].forEach(id=>$("#"+id).addEventListener("change",collectPlan));
       $("#confirm-date").addEventListener("click",()=>{
         const date=$("#confirmed-date").value;
         if(!date){toast("Choose a confirmed opening date first.");return;}
@@ -763,16 +1552,23 @@
       $("#practice-job").addEventListener("change",()=>{capturePractice();syncPracticeForm();});
       $("#round").addEventListener("change",capturePractice);
       $("#recruiter-notes").addEventListener("change",capturePractice);
+      $("#focus-topic").addEventListener("change",()=>{
+        capturePractice();
+        $("#focus-topic-status").textContent=state.practice.focusTopic
+          ?"Your next quiz and mock interview will start with "+state.practice.focusTopic+"."
+          :"Your next session will choose topics adaptively.";
+      });
       const mockButton=document.createElement("button"); mockButton.type="button";mockButton.className="button secondary";mockButton.textContent="Start a mock interview";
       mockButton.style.marginTop="10px";mockButton.addEventListener("click",startMock);
       $("#start-diagnostic").parentElement.append(mockButton);
       $("#update-guide").addEventListener("click",renderGuide);
       $("#guide-job").addEventListener("change",renderGuide);
       $("#guide-round").addEventListener("change",renderGuide);
-      $("#submit-report").addEventListener("click",()=>submitReport($$("#report-topics input:checked").map(i=>i.value),$("#report-job").value.trim()||currentJob(),$("#report-round").value));
+      $("#find-alumni").addEventListener("click",findAlumni);
+      $("#submit-report").addEventListener("click",()=>submitReport($$("#report-topics input:checked").map(i=>i.value),$("#report-job").value.trim()||currentJob(),$("#report-round").selectedOptions[0].textContent));
       $("#use-sample-report").addEventListener("click",()=>submitReport(["Discounted cash flow","Accounting links","Enterprise value"],"Investment Banking Analyst","Technical","clearly labelled fictional sample"));
       const hash=location.hash.slice(1);
-      showPage(["planner","practice","guide","community"].includes(hash)?hash:"planner");
+      showPage(["planner","practice","guide","community","alumni"].includes(hash)?hash:"planner");
       renderCommunity();
     }
     init();

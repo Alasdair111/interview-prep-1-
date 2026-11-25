@@ -321,7 +321,7 @@
       const s = String(job || "").toLowerCase();
       if (/investment banking|banker|m&a|capital markets/.test(s)) return "banking";
       if (/account|auditor|bookkeep|tax/.test(s)) return "accounting";
-      if (/finance|financial|equity|treasury|risk analyst/.test(s)) return "finance";
+      if (/finance|financial|investment analyst|equity|treasury|risk analyst|portfolio/.test(s)) return "finance";
       if (/software|developer|programmer|web engineer|frontend|back.end/.test(s)) return "software";
       if (/data|analytics|statistic|machine learning|business intelligence/.test(s)) return "data";
       if (/engineer|mechanical|electrical|civil|chemical|manufacturing/.test(s)) return "engineering";
@@ -490,14 +490,17 @@
       const selectedTopics = state.practice.difficult;
       const common = COMMON_BY_ROUND[round] || [];
       const counts = state.practice.missed || {};
+      const reportedCounts = reportsCounts();
       const all = topicsFor(job);
       const noteWords = String(notes || "").toLowerCase();
       const scored = all.map((topic, index) => {
         const isCommon = common.includes(topic);
         const isDifficult = selectedTopics.includes(topic);
         const missed = counts[topic] || 0;
+        const reportCount = reportedCounts[topic] || 0;
+        const isReported = reportCount >= 4;
         const noteBoost = topic.toLowerCase().split(/[ &/]+/).some(word => word.length > 3 && noteWords.includes(word));
-        return {topic, score:(isCommon?2:0)+(isDifficult?3:0)+(missed*2)+(noteBoost?1:0), isCommon, isDifficult, missed, noteBoost, index};
+        return {topic, score:(isCommon?2:0)+(isReported?2:0)+(isDifficult?3:0)+(missed*2)+(noteBoost?1:0), isCommon, isReported, reportCount, isDifficult, missed, noteBoost, index};
       }).sort((a,b) => b.score-a.score || a.index-b.index);
       const questionMap = questionLibrary(fam);
       return scored.slice(0,3).map((item, index) => {
@@ -507,7 +510,8 @@
           points: ["Give a specific context and goal", "Explain your reasoning and actions", "Share a result or what you learned"]
         };
         let why = [];
-        if (item.isCommon) why.push("commonly reported for a " + round.toLowerCase());
+        if (item.isCommon) why.push("commonly practised for a " + round.toLowerCase());
+        if (item.isReported) why.push("appearing in " + item.reportCount + " clearly labelled sample reports");
         if (item.isDifficult) why.push("you marked it difficult");
         if (item.missed) why.push("you missed " + item.missed + " recent question" + (item.missed===1?"":"s") + " on it");
         if (item.noteBoost) why.push("it matches your recruiter notes");
@@ -718,7 +722,6 @@
       const pointList=document.createElement("ul"); pointList.className="key-points";
       const pointChecks=q.points.map(point=>{
         const li=document.createElement("li"); const label=document.createElement("label"); const input=document.createElement("input"); input.type="checkbox";
-        input.addEventListener("change",()=>{ if(input.checked){} });
         const span=document.createElement("span"); span.textContent=point; label.append(input,span); li.append(label); pointList.append(li); return input;
       });
       const saveMock=document.createElement("button"); saveMock.type="button"; saveMock.className="button"; saveMock.textContent="Save mock interview review";

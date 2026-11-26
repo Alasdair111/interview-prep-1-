@@ -148,6 +148,16 @@
     .timeline-item { display: grid; grid-template-columns: 92px 1fr; gap: 8px; align-items: start; font-size: .82rem; }
     .timeline-item strong { color: var(--green); }
     .timeline-warning { margin-top: 10px; padding: 9px 10px; border-radius: 10px; background: #fff0e8; color: #7a492f; font-size: .82rem; }
+    .week-tabs { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 16px; padding: 2px 2px 8px; scrollbar-width: thin; }
+    .week-tab { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; background: #fff; color: var(--muted); font-size: .78rem; font-weight: 800; }
+    .week-tab:hover { border-color: #9eb8a2; }
+    .week-tab.active { background: var(--green); border-color: var(--green); color: #fff; }
+    .week-tab.preview { background: #f7f4ec; }
+    .program-progress { display: grid; gap: 8px; margin: 12px 0 4px; }
+    .program-progress-head { display: flex; justify-content: space-between; gap: 12px; font-size: .82rem; }
+    .program-hours { color: var(--muted); }
+    .week-progress { height: 7px; }
+    .complete-week { width: 100%; margin-top: 14px; }
     @media (max-width: 800px) {
       .hero, .layout { grid-template-columns: 1fr; }
       .hero-note { max-width: 580px; }
@@ -218,11 +228,18 @@
             <div class="inline" style="margin-top:14px"><button class="button" id="build-plan">Build my plan</button><span class="hint">Your title can be anything. We’ll tailor known fields and use general prep for others.</span></div>
           </article>
           <article class="card" style="margin-top:16px">
-            <div class="card-head"><div><p class="eyebrow">Your week</p><h2 id="week-title">Your focused checklist</h2></div><span class="pill" id="task-count">0 / 0 done</span></div>
-            <p class="muted" id="checklist-subtitle">A few specific actions to keep your momentum up.</p>
+            <div class="card-head"><div><p class="eyebrow">Personalized training program</p><h2 id="week-title">Your focused checklist</h2></div><span class="pill" id="task-count">0 / 0 done</span></div>
+            <p class="muted" id="checklist-subtitle">A week-by-week plan toward interview readiness.</p>
+            <div class="program-progress">
+              <div class="program-progress-head"><strong>Overall program</strong><span id="overall-progress-label">0%</span></div>
+              <div class="progress" role="progressbar" aria-label="Overall preparation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="overall-progress-bar"></span></div>
+              <div class="program-progress-head program-hours"><span id="hours-completed">0 hours completed</span><span id="hours-estimated">0 estimated hours</span></div>
+            </div>
+            <div class="week-tabs" id="week-tabs" aria-label="Training program weeks"></div>
             <div class="progress-top"><span>Weekly progress</span><span id="progress-label">0%</span></div>
-            <div class="progress" role="progressbar" aria-label="Weekly checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div>
+            <div class="progress week-progress" role="progressbar" aria-label="Weekly checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div>
             <ul class="task-list" id="task-list"></ul>
+            <button class="button complete-week" id="complete-week" hidden>Complete Week &amp; Start Next Week</button>
             <div class="banner" id="opening-estimate"></div>
             <div class="field"><label for="confirmed-date">Know the confirmed application opening date?</label><div class="inline"><input id="confirmed-date" type="date" style="max-width:220px"><button class="button secondary small" id="confirm-date">Reschedule remaining tasks</button><button class="button ghost small" id="clear-date">Use estimate</button></div><span class="hint">A confirmed date shifts upcoming task reminders. Completed checklist items stay checked.</span></div>
           </article>
@@ -369,7 +386,7 @@
       "Final round": ["Behavioural stories", "Role motivation", "Communication", "Problem solving", "Markets & business judgment"],
       "Not sure yet": ["Role motivation", "Communication", "Problem solving", "Behavioural stories"]
     };
-    const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", workTerm: "summer", workYear: "", startMonth: "5", startYear: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
+    const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", workTerm: "summer", workYear: "", startMonth: "5", startYear: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, program: { currentWeek: 1, completed: {}, hours: {} }, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
     let state = loadState();
     let jobFeed = null;
     let jobFeedRequest = null;
@@ -384,6 +401,7 @@
           plan: Object.assign({}, DEFAULT_STATE.plan, val.plan || {}, val.plan && val.plan.term && !val.plan.workYear ? (() => { const [y,m]=val.plan.term.split("-").map(Number); const workTerm=m>=9?"fall":m>=5?"summer":"winter"; return { workTerm, workYear:String(y), startMonth:String(m), startYear:String(y), term:val.plan.term }; })() : {}),
           practice: Object.assign({}, DEFAULT_STATE.practice, val.practice || {}),
           taskFeedback: Object.assign({}, DEFAULT_STATE.taskFeedback, val.taskFeedback || {}),
+          program: Object.assign({}, DEFAULT_STATE.program, val.program || {}, { completed: Object.assign({}, val.program?.completed || {}), hours: Object.assign({}, val.program?.hours || {}) }),
           reports: Array.isArray(val.reports) ? val.reports.filter(report => report && report.label !== "clearly labelled fictional sample") : [],
           opportunities: Array.isArray(val.opportunities) ? val.opportunities : []
         }) : structuredClone(DEFAULT_STATE);
@@ -710,7 +728,76 @@
         requestAnimationFrame(tick);
       }
     }
+    function preparationWeekCount() {
+      const today = new Date(); today.setHours(12,0,0,0);
+      let target = null;
+      if (state.plan.interviewDate) target = new Date(state.plan.interviewDate + "T12:00:00");
+      else if (state.plan.confirmedDate) target = new Date(state.plan.confirmedDate + "T12:00:00");
+      else {
+        const start = preferredStartISO();
+        if (start) { const [year,month] = start.split("-").map(Number); target = new Date(year,month-1,1); }
+      }
+      if (!target || target <= today) return 12;
+      return Math.max(4,Math.min(52,Math.ceil((target-today)/604800000)));
+    }
+    function makeWeeklyTasks(totalWeeks) {
+      const catalog = makePlanTasks(state.plan.job);
+      const byId = id => catalog.find(task => task.id === id);
+      const job = state.plan.job || "your target role";
+      const company = state.plan.company || "the target company";
+      const weak = Object.entries(state.practice.missed || {}).filter(([,count]) => count > 0).sort((a,b)=>b[1]-a[1]).map(([topic])=>topic).slice(0,2);
+      const roleTopics = topicsFor(job).filter(topic => !weak.includes(topic)).slice(0,2);
+      const taskCount = /private equity|investment banking|consult|software|engineering|accounting/.test(job.toLowerCase()) ? 4 : 3;
+      const networkingWeek = Math.max(2,Math.floor(totalWeeks*.24));
+      const applicationWeek = Math.max(2,Math.min(totalWeeks-2,Math.floor(totalWeeks*.38)));
+      const mockWeek = Math.max(2,totalWeeks-1);
+      const weeks=[];
+      for(let week=1;week<=totalWeeks;week++) {
+        let templates=[];
+        if(week===1) templates=[byId("resume-foundation"),byId("personal-story")];
+        else if(week===2) templates=[byId("resume-tailor"),byId("core-answers")];
+        else if(week===3) templates=[byId("cover-letter"),byId("technical-practice")];
+        else if(week===networkingWeek) templates=[byId("coffee-chats"),byId("personal-story")];
+        else if(week===applicationWeek) templates=[byId("resume-tailor"),byId("cover-letter"),byId("core-answers")];
+        else if(week>=mockWeek) templates=[byId("weak-areas"),byId("core-answers"),byId("technical-practice")];
+        else templates=week%2?[byId("technical-practice"),byId("weak-areas")]:[byId("core-answers"),byId("coffee-chats")];
+        templates=templates.filter(Boolean);
+        while(templates.length<taskCount) templates.push({title:"Timed Role Practice",detail:"Practice one priority from "+roleTopics.join(" or ")+" for "+job+".",steps:["Review the role priority.","Prepare a structured answer.","Test it aloud for 2–3 minutes.","Record the weakest point."],feedback:"Keep the work specific to "+company+".",offset:0});
+        if(week>=mockWeek) templates.push({title:"Full Mock Interview",detail:"Complete a timed mock interview for "+job+".",steps:["Complete 3–5 role-specific questions.","Use a clear 60–90 second behavioural answer.","Review every missed point.","Repeat the weakest answer."],feedback:"The final weeks should recover weak topics, not add unrelated ones.",offset:0});
+        const seen=new Set();
+        const tasks=templates.filter(task=>task&&(task.id||task.title)).filter(task=>{const key=task.id||task.title;if(seen.has(key))return false;seen.add(key);return true;}).slice(0,taskCount+(week>=mockWeek?1:0)).map((task,index)=>{
+          const sourceId=task.id||(task.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));
+          const id="week-"+week+"-"+sourceId;
+          let detail=task.detail,steps=task.steps||[];
+          if(sourceId==="weak-areas"&&weak.length){detail="Repeat and improve: "+weak[0]+".";steps=["Review the previous incomplete answer.","Answer a fresh prompt on "+weak[0]+".","Use structure and one specific example.","Reassess before marking it complete."];}
+          else if(sourceId==="technical-practice"&&roleTopics.length) detail="Practice "+roleTopics.join(" and ")+" for "+job+" at "+company+".";
+          return {id,title:task.title,detail,steps,feedback:task.feedback,hours:week===totalWeeks?5:taskCount>=4?4:3};
+        });
+        if(week===networkingWeek) tasks.unshift({id:"week-"+week+"-networking-milestone",title:"Networking Milestone",detail:"Begin 2–3 focused coffee chats for "+job+" at "+company+".",steps:["Identify one relevant person.","Send a concise request.","Prepare role-specific questions.","Add insights to application answers."],feedback:"Quality and relevance matter more than volume.",hours:3});
+        weeks.push({week,tasks});
+      }
+      return weeks;
+    }
     function renderPlan() {
+      planningInsights();
+      const totalWeeks=preparationWeekCount();
+      if(!state.program.currentWeek||state.program.currentWeek>totalWeeks)state.program.currentWeek=1;
+      const weeks=makeWeeklyTasks(totalWeeks),tabs=$("#week-tabs");tabs.replaceChildren();
+      weeks.forEach(({week})=>{const tab=document.createElement("button");tab.type="button";tab.className="week-tab"+(week===state.program.currentWeek?" active":"")+(week>state.program.currentWeek?" preview":"");tab.textContent="Week "+week;tab.addEventListener("click",()=>{state.program.currentWeek=week;save();renderPlan();});tabs.append(tab);});
+      const selected=weeks[state.program.currentWeek-1];
+      $("#week-title").textContent="Week "+selected.week+" of "+totalWeeks;
+      $("#checklist-subtitle").textContent=state.plan.job?"Progressively tailored preparation toward "+state.plan.job+".":"A progressive, role-specific interview training plan.";
+      const ul=$("#task-list");ul.replaceChildren();
+      let weeklyDone=0,estimatedHours=0,completedHours=0;
+      const allTasks=weeks.flatMap(item=>item.tasks);allTasks.forEach(task=>{estimatedHours+=task.hours;if(state.program.completed[task.id])completedHours+=task.hours;});
+      selected.tasks.forEach((task,index)=>{const complete=!!state.program.completed[task.id];if(complete)weeklyDone++;const li=document.createElement("li");li.className="task roadmap-task"+(complete?" completed":"");const check=document.createElement("input");check.type="checkbox";check.checked=complete;check.setAttribute("aria-label","Mark "+task.title+" complete");check.addEventListener("change",()=>{state.program.completed[task.id]=check.checked;if(check.checked)state.checked[task.id]=true;else delete state.checked[task.id];save();renderPlan();});const number=document.createElement("span");number.className="task-number";number.textContent=String(index+1);const content=document.createElement("div");const status=document.createElement("span");status.className="task-status"+(complete?" done":"");status.textContent=complete?"Completed":"Up next";const title=document.createElement("strong");title.textContent=task.title;const detail=document.createElement("p");detail.textContent=task.detail+" · Est. "+task.hours+" hrs";const steps=document.createElement("ol");steps.className="action-steps";task.steps.forEach(step=>{const item=document.createElement("li");item.textContent=step;steps.append(item);});const feedback=document.createElement("div");feedback.className="personal-feedback";feedback.textContent="Personalized guidance: "+task.feedback;const note=document.createElement("textarea");note.className="task-feedback";note.placeholder="Capture progress, a mock answer, or the next improvement.";note.value=state.taskFeedback[task.id]||"";note.addEventListener("change",()=>{state.taskFeedback[task.id]=note.value;save();});content.append(status,title,detail,steps,feedback,note);li.append(check,number,content);ul.append(li);});
+      const weeklyPct=selected.tasks.length?Math.round(weeklyDone/selected.tasks.length*100):0;
+      $("#task-count").textContent=weeklyDone+" / "+selected.tasks.length+" done";$("#progress-label").textContent=weeklyPct+"%";$("#progress-bar").style.width=weeklyPct+"%";$(".week-progress").setAttribute("aria-valuenow",String(weeklyPct));
+      const overallPct=estimatedHours?Math.round(completedHours/estimatedHours*100):0;$("#overall-progress-label").textContent=overallPct+"%";$("#overall-progress-bar").style.width=overallPct+"%";$("[aria-label='Overall preparation progress']").setAttribute("aria-valuenow",String(overallPct));$("#hours-completed").textContent=completedHours+" hours completed";$("#hours-estimated").textContent=estimatedHours+" estimated hours";
+      const completeButton=$("#complete-week");completeButton.hidden=weeklyPct!==100||selected.week>=totalWeeks;completeButton.onclick=()=>{if(selected.week===state.program.currentWeek){state.program.currentWeek=Math.min(totalWeeks,selected.week+1);save();renderPlan();}};
+      const today=new Date();today.setHours(12,0,0,0);const interviewDays=state.plan.interviewDate?Math.ceil((new Date(state.plan.interviewDate+"T12:00:00")-today)/86400000):null;const deadlinePlan=interviewDays!==null&&interviewDays>=0?"Your interview is "+interviewDays+" day"+(interviewDays===1?"":"s")+" away. "+(interviewDays<=14?"Focus on mock interviews and weak-topic recovery.":"Build applications and role-specific evidence first."):"No interview date entered. Use the work term and application milestones to plan backward.";$("#opening-estimate").textContent=deadlinePlan+" "+estimatedOpening();renderApplicationTips();
+    }
+    function renderLegacyPlan() {
       planningInsights();
       const tasks = makePlanTasks(state.plan.job);
       const ul = $("#task-list"); ul.replaceChildren();

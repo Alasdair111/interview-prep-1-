@@ -32,6 +32,21 @@ Copy this block for each session.
 - **What broke, and how we fixed it:** The guide label changed while the questions stayed the same, and the topic tags did not update with the selected round. Round-specific mappings and update behavior fixed both. The job-listing approach changed through follow-up prompts; the latest requested design is company career-page links rather than rotating live job postings.
 - **Committed?** no — no commit was made or reported in chat.
 
+### Session — 2026-11-26 — driver: not provided in chat
+
+- **Goal for this session:** Preview the UpNext website in a canvas and finish the project for submission.
+- **Key prompts we gave Copilot** (paste the important ones):
+  1. “show me preview”
+  2. “Finish this website and make me the URL. And in the format that the teacher wants.”
+  3. “you enable it and finish everything that is needed”
+  4. “i set it ro gethub actions”
+- **What worked:** The attached UpNext interface was connected to a workspace preview canvas. The project was committed and pushed to GitHub. A GitHub Pages deployment workflow was added, Pages was configured to use GitHub Actions, and the site was successfully deployed.
+- **What broke, and how we fixed it:** Preview-only canvas files were removed from the main student project. The first Pages attempts failed because Pages had not yet been enabled or configured. GitHub Pages was set to use GitHub Actions, and a deployment run was triggered through a new commit.
+- **Committed?** yes — commits included `87b98c3` for the finished prototype, `d43ff04` for the Pages deployment workflow, `1b12b44` for Pages enablement in the workflow, and `9932c8e` for triggering deployment.
+
+**Final live site link:** https://alasdair111.github.io/interview-prep-1-/  
+**Deployment method:** GitHub Pages with GitHub Actions
+
 ---
 
 ## Things that broke (running list)
@@ -41,6 +56,7 @@ Copy this block for each session.
 | 2026-11-25 | Topic Guide label changed, but interview questions did not. | Connected guide content to the selected round. | Stable round IDs map technical, behavioral, case study, screening, and final-round selections to distinct question sets. |
 | 2026-11-25 | “What came up?” topic choices did not change with the interview round. | Updated the topic choices on round and job-area changes. | Topic choices now refresh when either selection changes. |
 | 2026-11-25 | The job-opportunity design changed as the user clarified the desired experience. | Explored live job feeds and rotating job links, then replaced them with employer student-career pages. | The latest design is a one-line, horizontally scrollable set of company career links with logos. |
+| 2026-11-26 | GitHub Pages was not yet enabled or configured to build with GitHub Actions. | Added a Pages deployment workflow and tried to trigger it. | GitHub Pages was set to use GitHub Actions, then a new commit automatically triggered a successful deployment. |
 
 ## What a real version would need
 
@@ -51,9 +67,10 @@ Everything we wanted but faked or left out — real logins, a real database, pay
 | User accounts and server-side storage | The prototype saves progress in the user's browser; the chat did not establish cross-device or shared-account storage. | Not estimated in chat. |
 | Automatically verified, live job openings | Live job feeds were explored, but the latest requested version links to company student-career pages instead of displaying current openings. A live-opening service would need reliable, current postings and working application destinations. | Not estimated in chat. |
 | Dependable company logos | The current company links use logos loaded from an external favicon service, with initials as a fallback. | Not estimated in chat. |
+| Public deployment setup | A real deployment would need an enabled Pages source and permissions for the repository to create and update a live site. This prototype uses GitHub Pages with a GitHub Actions deployment workflow. | Low cost; setup was completed through GitHub Actions. |
 
 ## Reflection (fill in at the end)
 
-1. What surprised you most about building software with AI? Not answered in chat yet.
-2. Which parts were easy, and which were hard? Why do you think that is? Not answered in chat yet.
-3. If a competitor had the same AI tool, how long would it take them to copy your site? Not answered in chat yet.
+1. What surprised you most about building software with AI? Not answered in this chat.
+2. Which parts were easy, and which were hard? Why do you think that is? Not answered in this chat.
+3. If a competitor had the same AI tool, how long would it take them to copy your site? Not answered in this chat.

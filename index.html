@@ -132,6 +132,22 @@
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #292b28; color: white; border-radius: 999px; padding: 10px 16px; z-index: 8; transition: .2s; font-size: .9rem; }
     .toast.show { transform: translate(-50%, 0); opacity: 1; }
     .speech-note { font-size: .82rem; color: var(--muted); }
+    .difficulty-card { text-align: center; }
+    .difficulty-gauge { --gauge-angle: 0deg; --gauge-color: #4f8a61; position: relative; width: 150px; height: 150px; margin: 12px auto 10px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--gauge-color) var(--gauge-angle), #ecebe4 0); }
+    .difficulty-gauge::before { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: var(--card); }
+    .difficulty-value { position: relative; z-index: 1; display: grid; line-height: 1; }
+    .difficulty-value strong { font-size: 2.55rem; letter-spacing: -.06em; }
+    .difficulty-value span { margin-top: 7px; color: var(--muted); font-size: .78rem; font-weight: 800; }
+    .difficulty-label { display: inline-block; border-radius: 999px; padding: 5px 10px; font-size: .78rem; font-weight: 850; }
+    .difficulty-explanation { max-width: 270px; margin: 10px auto 14px; color: var(--muted); font-size: .88rem; }
+    .prep-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .prep-metric { padding: 10px 8px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .prep-metric strong { display: block; color: var(--green); font-size: 1.05rem; }
+    .prep-metric span { color: var(--muted); font-size: .75rem; }
+    .timeline-grid { display: grid; gap: 7px; margin-top: 10px; }
+    .timeline-item { display: grid; grid-template-columns: 92px 1fr; gap: 8px; align-items: start; font-size: .82rem; }
+    .timeline-item strong { color: var(--green); }
+    .timeline-warning { margin-top: 10px; padding: 9px 10px; border-radius: 10px; background: #fff0e8; color: #7a492f; font-size: .82rem; }
     @media (max-width: 800px) {
       .hero, .layout { grid-template-columns: 1fr; }
       .hero-note { max-width: 580px; }
@@ -193,7 +209,8 @@
               <div class="field"><label for="preferred-location">Preferred city / area</label><input id="preferred-location" placeholder="e.g. Toronto, remote, or any location"></div>
               <div class="field"><label for="position-type">Position type</label><select id="position-type"><option>Internship / co-op</option><option>Entry-level position</option><option>Full-time position</option></select></div>
               <div class="field"><label for="experience-level">Education / experience level</label><input id="experience-level" placeholder="e.g. Undergraduate student, new graduate"></div>
-              <div class="field"><label for="start-term">When do you want to start?</label><input id="start-term" type="month"></div>
+              <div class="field"><label>Preferred work term</label><div class="fields" style="grid-template-columns:1fr 1fr;gap:8px"><div><label for="work-term" class="hint">Work Term</label><select id="work-term"><option value="winter">Winter (January–April)</option><option value="summer">Summer (May–August)</option><option value="fall">Fall (September–December)</option></select></div><div><label for="work-year" class="hint">Year</label><select id="work-year"></select></div></div></div>
+              <div class="field" id="full-time-start-field" hidden><label>Preferred full-time start</label><div class="fields" style="grid-template-columns:1fr 1fr;gap:8px"><div><label for="start-month" class="hint">Month</label><select id="start-month"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div><div><label for="start-year" class="hint">Year</label><select id="start-year"></select></div></div></div>
               <div class="field"><label for="interview-date">Interview date <span class="hint">(if you have one)</span></label><input id="interview-date" type="date"></div>
               <div class="field full"><label for="job-description">Job description</label><textarea id="job-description" placeholder="Paste the responsibilities, qualifications, and keywords from the posting."></textarea></div>
               <div class="field full"><label for="resume-context">Your resume, experience, and goals</label><textarea id="resume-context" placeholder="Summarize education, roles, projects, achievements, skills, and the career story you want the application to show."></textarea></div>
@@ -211,6 +228,19 @@
           </article>
         </div>
         <aside>
+          <article class="card difficulty-card" id="difficulty-card">
+            <p class="eyebrow" style="margin:0">Estimated difficulty rating</p>
+            <div class="difficulty-gauge" id="difficulty-gauge" role="progressbar" aria-label="Estimated job difficulty" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5">
+              <div class="difficulty-value"><strong id="difficulty-score">5</strong><span>OUT OF 10</span></div>
+            </div>
+            <span class="difficulty-label" id="difficulty-label">Moderately competitive</span>
+            <p class="difficulty-explanation" id="difficulty-explanation"></p>
+            <div class="prep-metrics">
+              <div class="prep-metric"><strong id="total-prep-hours">—</strong><span>Estimated total hours</span></div>
+              <div class="prep-metric"><strong id="weekly-prep-hours">—</strong><span>Recommended hours / week</span></div>
+            </div>
+            <div class="timeline-grid" id="recruitment-timeline"></div>
+          </article>
           <article class="card">
             <div class="panel-title"><span class="icon">✍️</span><div><p class="eyebrow" style="margin:0">Make a stronger application</p><h2>Small, specific improvements</h2></div></div>
             <div id="application-tips"></div>
@@ -339,7 +369,7 @@
       "Final round": ["Behavioural stories", "Role motivation", "Communication", "Problem solving", "Markets & business judgment"],
       "Not sure yet": ["Role motivation", "Communication", "Problem solving", "Behavioural stories"]
     };
-    const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
+    const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", workTerm: "summer", workYear: "", startMonth: "5", startYear: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
     let state = loadState();
     let jobFeed = null;
     let jobFeedRequest = null;
@@ -351,7 +381,7 @@
       try {
         const val = JSON.parse(localStorage.getItem(STORE) || "null");
         return val && typeof val === "object" ? Object.assign({}, DEFAULT_STATE, val, {
-          plan: Object.assign({}, DEFAULT_STATE.plan, val.plan || {}),
+          plan: Object.assign({}, DEFAULT_STATE.plan, val.plan || {}, val.plan && val.plan.term && !val.plan.workYear ? (() => { const [y,m]=val.plan.term.split("-").map(Number); const workTerm=m>=9?"fall":m>=5?"summer":"winter"; return { workTerm, workYear:String(y), startMonth:String(m), startYear:String(y), term:val.plan.term }; })() : {}),
           practice: Object.assign({}, DEFAULT_STATE.practice, val.practice || {}),
           taskFeedback: Object.assign({}, DEFAULT_STATE.taskFeedback, val.taskFeedback || {}),
           reports: Array.isArray(val.reports) ? val.reports.filter(report => report && report.label !== "clearly labelled fictional sample") : [],
@@ -509,19 +539,58 @@
       }
       return orderedIds.map(byId).filter(Boolean);
     }
+    function preferredStartISO() {
+      if (state.plan.position === "Full-time position") {
+        const year = state.plan.startYear;
+        const month = state.plan.startMonth;
+        return year && month ? year + "-" + String(month).padStart(2, "0") : "";
+      }
+      const year = state.plan.workYear;
+      const month = state.plan.workTerm === "winter" ? "01" : state.plan.workTerm === "fall" ? "09" : "05";
+      return year ? year + "-" + month : "";
+    }
+    function recruitmentLeadMonths(job, company, location, position) {
+      const fam = family(job);
+      let leadMonths = fam === "banking" || /private equity|investment banking/.test(job.toLowerCase()) ? 15 : fam === "consulting" || fam === "business" ? 12 : fam === "software" || fam === "engineering" ? 9 : fam === "accounting" || fam === "finance" ? 8 : 6;
+      const employer = String(company || "").toLowerCase();
+      const place = String(location || "").toLowerCase();
+      if (/goldman|jpmorgan|morgan stanley|mckinsey|bain|bcg|google|meta|microsoft|amazon|nvidia/.test(employer)) leadMonths = Math.max(leadMonths, fam === "banking" ? 15 : 10);
+      if (/new york|toronto|vancouver|london|bay area|san francisco/.test(place) && leadMonths < 12) leadMonths += 1;
+      if (position === "Full-time position") leadMonths = Math.max(3, leadMonths - 3);
+      return leadMonths;
+    }
+    function populateStartYears() {
+      const currentYear = new Date().getFullYear();
+      ["work-year", "start-year"].forEach(id => {
+        const select = $("#" + id);
+        if (!select) return;
+        select.replaceChildren();
+        for (let year = currentYear; year <= currentYear + 5; year++) {
+          const option = document.createElement("option"); option.value = String(year); option.textContent = String(year); select.append(option);
+        }
+      });
+      if (!state.plan.workYear) state.plan.workYear = String(currentYear);
+      if (!state.plan.startYear) state.plan.startYear = String(currentYear);
+    }
+    function toggleStartControls() {
+      const permanent = state.plan.position === "Full-time position";
+      $("#work-term").closest(".field").hidden = permanent;
+      $("#full-time-start-field").hidden = !permanent;
+    }
     function estimatedOpening() {
-      const term = state.plan.term;
-      if (!term) return "Typical application timing is only an estimate: many internship/co-op postings open several months before the start term; entry-level roles may open year-round. Check each employer’s own posting.";
+      const term = preferredStartISO();
+      if (!term) return "Typical application timing is only an estimate: recruitment varies by industry and employer. Add your preferred start term or month to estimate the preparation schedule.";
+      const fam = family(state.plan.job);
+      const leadMonths = recruitmentLeadMonths(state.plan.job, state.plan.company, state.plan.location, state.plan.position);
       const [y, m] = term.split("-").map(Number);
-      const start = new Date(y, m - 1, 1);
-      const months = state.plan.position.indexOf("Internship") >= 0 ? 6 : 3;
-      start.setMonth(start.getMonth() - months);
-      const date = start.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-      return "Estimated timing (not a confirmed date): postings for a " + startTermLabel() + " start may begin around " + date + ". Internship/co-op cycles vary; entry-level hiring can happen year-round. Verify dates on each posting.";
+      const application = new Date(y, m - 1, 1); application.setMonth(application.getMonth() - leadMonths);
+      const date = application.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      return "Estimated application timing (not a confirmed date): applications for " + startTermLabel() + " may typically open around " + date + ", depending on the role, company, industry, and location. Verify dates on the employer's official posting.";
     }
     function startTermLabel() {
-      if (!state.plan.term) return "target";
-      const [y, m] = state.plan.term.split("-").map(Number);
+      const term = preferredStartISO();
+      if (!term) return "the target work term";
+      const [y, m] = term.split("-").map(Number);
       return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
     }
     function taskDate(task) {
@@ -530,7 +599,119 @@
       const d = new Date(reference); d.setDate(reference.getDate() + task.offset);
       return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     }
+    function planningInsights() {
+      const job = state.plan.job || "";
+      const company = state.plan.company || "";
+      const fam = family(job);
+      let score;
+      if (/private equity|venture capital|investment banking|m&a/.test((job + " " + fam).toLowerCase())) score = 9;
+      else if (/consult|strategy|private equity|venture capital|product manager|engineering|software|developer/.test(job.toLowerCase())) score = 8;
+      else if (/account|audit|finance|financial|data|analytics/.test(job.toLowerCase())) score = 7;
+      else if (/marketing|sales|operations|business/.test(job.toLowerCase())) score = 6;
+      else score = 5;
+
+      const competitiveCompanies = /goldman|jpmorgan|morgan stanley|google|microsoft|meta|amazon|nvidia|deloitte|mckinsey|bain|bcg|accenture/.test(company.toLowerCase());
+      if (competitiveCompanies && score < 10) score += 1;
+      if (/internship|co-op|summer analyst|applied science/.test((job + " " + state.plan.position).toLowerCase())) score = Math.min(10, score + 1);
+      const description = (state.plan.jobDescription || "").toLowerCase();
+      if (/multiple rounds|highly competitive|complex technical|case interview|quantitative|coding/.test(description) && score < 10) score += 1;
+
+      const baseHours = { banking:150, engineering:120, software:120, accounting:90, finance:100, data:110, consulting:110, marketing:75, business:85, general:70 };
+      const hoursByFamily = Object.assign({}, baseHours, { consulting:110 });
+      const totalHours = Math.round((hoursByFamily[fam] || hoursByFamily.general) * (1 + (score - 5) * .045) / 5) * 5;
+      const recruitmentLead = state.plan.confirmedDate ? new Date(state.plan.confirmedDate + "T12:00:00") : (() => {
+        const term = preferredStartISO();
+        if (!term) return null;
+        const [year, month] = term.split("-").map(Number);
+        const start = new Date(year, month - 1, 1);
+        const leadMonths = recruitmentLeadMonths(job, state.plan.company, state.plan.location, state.plan.position);
+        start.setMonth(start.getMonth() - leadMonths);
+        return start;
+      })();
+      const remainingWeeks = recruitmentLead ? Math.max(1, Math.ceil((recruitmentLead - new Date()) / 604800000)) : 12;
+      const weeklyHours = Math.max(3, Math.min(20, Math.ceil(totalHours / Math.max(4, remainingWeeks))));
+
+      let label, color, explanation;
+      if (score <= 3) { label = "Less competitive"; color = "#4f8a61"; }
+      else if (score <= 6) { label = "Moderately competitive"; color = "#d2a93b"; }
+      else if (score <= 8) { label = "Highly competitive"; color = "#d78043"; }
+      else { label = "Extremely competitive"; color = "#a54f3d"; }
+      if (fam === "banking") explanation = "Investment banking recruiting is technically demanding and often starts early, with structured applications and multiple interview rounds.";
+      else if (fam === "software") explanation = "Software roles often require a strong coding sample, consistent algorithms practice, and system-design preparation.";
+      else if (fam === "accounting") explanation = "Accounting roles favour practical judgement, financial reporting knowledge, auditing awareness, and clear behavioural examples.";
+      else if (fam === "engineering") explanation = "Engineering roles can combine technical fundamentals, applied problem solving, and role-specific safety or design questions.";
+      else if (fam === "marketing") explanation = "Marketing roles reward campaign thinking, consumer insight, measurable outcomes, and a portfolio of clear examples.";
+      else if (fam === "data") explanation = "Data roles combine technical analysis, SQL or statistics, business interpretation, and evidence of completed projects.";
+      else if (fam === "consulting" || fam === "business") explanation = "Consulting and strategy roles reward structured case thinking, commercial judgment, communication, and polished examples.";
+      else explanation = "Competition can vary by employer and location; targeted role research and a focused application improve preparation quality.";
+
+      const gauge = $("#difficulty-gauge");
+      if (gauge) {
+        gauge.style.setProperty("--gauge-color", color);
+        gauge.setAttribute("aria-valuenow", String(score));
+        $("#difficulty-score").textContent = score;
+        $("#difficulty-label").textContent = label;
+        $("#difficulty-label").style.background = color + "18";
+        $("#difficulty-label").style.color = color;
+        $("#difficulty-explanation").textContent = explanation;
+        $("#total-prep-hours").textContent = totalHours + " hrs";
+        $("#weekly-prep-hours").textContent = weeklyHours + " hrs";
+        $("#week-title").textContent = "Your " + weeklyHours + "-hour preparation week";
+        $("#week-title").textContent = "Your " + weeklyHours + "-hour preparation week";
+      }
+
+      const timeline = $("#recruitment-timeline");
+      if (timeline) {
+        timeline.replaceChildren();
+        let leadMonths = recruitmentLeadMonths(job, state.plan.company, state.plan.location, state.plan.position);
+        const today = new Date(); today.setHours(12,0,0,0);
+        let start = null, application = null;
+        const preferredStart = preferredStartISO();
+        if (preferredStart) {
+          const [year, month] = preferredStart.split("-").map(Number);
+          start = new Date(year, month - 1, 1);
+          application = new Date(start); application.setMonth(application.getMonth() - leadMonths);
+        }
+        const preparation = application ? new Date(application) : null;
+        if (preparation) preparation.setMonth(preparation.getMonth() - 2);
+        const networking = preparation ? new Date(preparation) : null;
+        if (networking) networking.setMonth(networking.getMonth() - 1);
+        const interview = application ? new Date(application) : null;
+        if (interview) interview.setMonth(interview.getMonth() + 2);
+        const format = date => date ? date.toLocaleDateString(undefined,{month:"short",year:"numeric"}) : "To estimate, add your start term";
+        const items = state.plan.confirmedDate
+          ? [["Verified", new Date(state.plan.confirmedDate + "T12:00:00").toLocaleDateString(undefined,{dateStyle:"medium"}) + " (user-confirmed)"],["Interviews","Typically after the application opens; check the posting"]]
+          : [["Preparation",format(preparation)+" (estimated)"],["Networking",format(networking)+" (estimated)"],["Applications",format(application)+" (estimated)"],["Interviews",format(interview)+" (estimated)"]];
+        items.forEach(([labelText,value]) => {
+          const row = document.createElement("div"); row.className = "timeline-item";
+          const labelEl = document.createElement("strong"); labelEl.textContent = labelText;
+          const valueEl = document.createElement("span"); valueEl.textContent = value;
+          row.append(labelEl,valueEl); timeline.append(row);
+        });
+        if (!state.plan.confirmedDate && preparation && today > preparation) {
+          const warning = document.createElement("div"); warning.className = "timeline-warning";
+          warning.textContent = "You may already be behind the typical preparation schedule for this role. Prioritize networking, technical practice, and a tailored application now.";
+          timeline.append(warning);
+        }
+      }
+
+      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const target = score * 36;
+      let current = 0;
+      const gaugeAnimation = $("#difficulty-gauge");
+      if (reduceMotion) gaugeAnimation.style.setProperty("--gauge-angle", target + "deg");
+      else {
+        gaugeAnimation.style.setProperty("--gauge-angle", "0deg");
+        const tick = () => {
+          current = Math.min(target, current + 3.6);
+          gaugeAnimation.style.setProperty("--gauge-angle", current + "deg");
+          if (current < target) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    }
     function renderPlan() {
+      planningInsights();
       const tasks = makePlanTasks(state.plan.job);
       const ul = $("#task-list"); ul.replaceChildren();
       let done = 0;
@@ -1032,7 +1213,12 @@
       $("#preferred-location").value = state.plan.location || "";
       $("#experience-level").value = state.plan.experienceLevel || "";
       $("#position-type").value = state.plan.position;
-      $("#start-term").value = state.plan.term;
+      populateStartYears();
+      $("#work-term").value = state.plan.workTerm || "summer";
+      $("#work-year").value = state.plan.workYear || "";
+      $("#start-month").value = state.plan.startMonth || "5";
+      $("#start-year").value = state.plan.startYear || "";
+      toggleStartControls();
       $("#confirmed-date").value = state.plan.confirmedDate;
       $("#interview-date").value = state.plan.interviewDate || "";
       $("#job-description").value = state.plan.jobDescription || "";
@@ -1046,7 +1232,11 @@
       state.plan.location = $("#preferred-location").value.trim();
       state.plan.experienceLevel = $("#experience-level").value.trim();
       state.plan.position = $("#position-type").value;
-      state.plan.term = $("#start-term").value;
+      state.plan.workTerm = $("#work-term").value;
+      state.plan.workYear = $("#work-year").value;
+      state.plan.startMonth = $("#start-month").value;
+      state.plan.startYear = $("#start-year").value;
+      state.plan.term = preferredStartISO();
       state.plan.interviewDate = $("#interview-date").value;
       state.plan.jobDescription = $("#job-description").value.trim();
       state.plan.resumeContext = $("#resume-context").value.trim();
@@ -1570,7 +1760,7 @@
       initNavigation(); fillPlanForm();
       renderCompanyCareerLinks();
       $("#build-plan").addEventListener("click",collectPlan);
-      ["job-title","company","region","preferred-location","experience-level","position-type","start-term","interview-date","job-description","resume-context"].forEach(id=>$("#"+id).addEventListener("change",collectPlan));
+      ["job-title","company","region","preferred-location","experience-level","position-type","work-term","work-year","start-month","start-year","interview-date","job-description","resume-context"].forEach(id=>$("#"+id).addEventListener("change",()=>{ if(id==="position-type") { state.plan.position = $("#position-type").value; toggleStartControls(); } collectPlan(); }));
       $("#confirm-date").addEventListener("click",()=>{
         const date=$("#confirmed-date").value;
         if(!date){toast("Choose a confirmed opening date first.");return;}

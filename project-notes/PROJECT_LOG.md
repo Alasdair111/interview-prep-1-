@@ -71,6 +71,22 @@ Everything we wanted but faked or left out — real logins, a real database, pay
 
 ## Reflection (fill in at the end)
 
-1. What surprised you most about building software with AI? Not answered in this chat.
-2. Which parts were easy, and which were hard? Why do you think that is? Not answered in this chat.
-3. If a competitor had the same AI tool, how long would it take them to copy your site? Not answered in this chat.
+1. **What surprised you the most about building software with AI?**
+
+   The biggest thing that surprised me about building software with AI was how straightforward it was. I knew AI could build websites, but I didn't realize it would be as simple as telling it what I wanted and having it do the work for me. I was pretty mind-blown by everything it was able to do, especially how easily I was able to get it to link to other companies' websites and build interactive features without having to write the code myself.
+
+2. **What was the hardest part, and what was the easiest part?**
+
+   I would say the hardest part was creating the right prompt to get the website exactly how I wanted it. When I first started building the website, I found that my prompts weren't specific enough, and the results weren't exactly what I was looking for.
+
+   To fix this, I used ChatGPT to interview me. I had it ask me around 50 questions, which I answered to help build a more detailed and accurate original prompt. I think one of the biggest parts of building software with AI is having a good prompt.
+
+   The easiest part was making fixes and adjustments once the original prompt was completed. It was extremely easy to make changes to the website. All I had to do was type what I wanted to change, and the AI would make the adjustments right away.
+
+3. **If a competitor had access to the same AI tool, how long would it take them to copy your website?**
+
+   I think it would take a competitor over a week to replicate my website exactly, mainly because of all the small details and features I added throughout the development process. However, because anyone can access the same AI tools, I don't think it would be extremely difficult for someone to build a similar website.
+
+   That is why I designed certain features to help build a competitive moat. For example, users can return to the website after their interviews and input the topics and common questions they were asked. Over time, as more people use the website, this data could help future applicants prepare for similar interviews.
+
+   Even if a competitor replicated my entire website, they would not automatically have access to the data I could collect from

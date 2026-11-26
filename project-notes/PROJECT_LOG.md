@@ -4,7 +4,7 @@ Keep this up to date as you go — a few lines per work session is enough. It's 
 
 **Team name:** Not provided in chat
 **Startup name:** UpNext
-**Live site link:** Preview at http://localhost:8000 (local preview; no public site link provided)
+**Live site link:** https://alasdair111.github.io/interview-prep-1-/
 
 ---
 

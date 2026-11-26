@@ -272,15 +272,9 @@
     </section>
 
     <section class="view" id="community" hidden>
-      <div class="page-intro"><p class="eyebrow">Anonymous learning loop</p><h1>What came up in your interview?</h1><p>Tick topics you remember and submit an anonymous sample report. This prototype stores reports only in this browser — it does not send anything to a server.</p></div>
+      <div class="page-intro"><p class="eyebrow">Anonymous learning loop</p><h1>What came up in your interview?</h1><p>Choose your role and tick the topics you remember. Submit an anonymous report to add genuine local activity to the role-specific topic counts.</p></div>
       <div class="layout">
         <div>
-          <article class="card">
-            <div class="sample-label">✦ Clearly labelled sample report</div>
-            <h2>Practice interview: investment banking analyst</h2><p class="muted">Fictional example · Technical round · 3 sample topics</p>
-            <p>Discounted cash flow · Accounting links · Enterprise value</p>
-            <button class="button secondary small" id="use-sample-report">Add this sample report</button>
-          </article>
           <article class="card">
             <div class="card-head"><div><p class="eyebrow">Your turn</p><h2>Report topics from an interview</h2><p class="muted">No names, company names, or personal details, please.</p></div></div>
             <div class="fields">
@@ -288,18 +282,18 @@
               <div class="field"><label for="report-round">Interview round</label><select id="report-round"><option value="technical">Technical</option><option value="behavioral">Behavioural</option><option value="case-study">Case study</option><option value="screening">First / recruiter screen</option><option value="final-round">Final round</option></select></div>
             </div>
             <p style="margin:14px 0 4px"><strong>Which topics came up?</strong></p><div id="report-topics" class="topic-grid"></div>
-            <button class="button" id="submit-report">Submit anonymous sample report</button>
+            <div class="inline" style="margin-top:10px"><input id="custom-report-topic" aria-label="Custom interview topic" placeholder="Add another interview topic"><button type="button" class="button secondary small" id="add-custom-report-topic">Add topic</button></div>
+            <button class="button" id="submit-report" style="margin-top:12px">Submit anonymous interview report</button>
             <p class="hint" id="report-confirm" aria-live="polite" style="margin-top:10px"></p>
           </article>
         </div>
         <aside>
           <article class="card">
-            <div class="sample-label">✦ Sample network + your local reports</div>
             <h2>What other applicants are practising</h2>
-            <p class="muted">Clearly labelled fictional baseline counts. Your reports are added on this device to show how rankings can change.</p>
+            <p class="muted">Real applicant activity for this job and industry. Counts start at zero on this device.</p>
             <div id="topic-rankings"></div>
           </article>
-          <article class="card"><h2>How this concept works</h2><p class="muted">In a real course, anonymous reports could help the next applicant spot topics appearing more often. Here, sample counts demonstrate that idea; they are not real hiring data or a prediction.</p></article>
+          <article class="card"><h2>How this concept works</h2><p class="muted">Anonymous reports help show which topics come up for a role and industry. Counts only reflect report activity stored in this browser.</p></article>
         </aside>
       </div>
     </section>
@@ -328,6 +322,7 @@
     const JOB_FEED_REFRESH_MS = 6 * 60 * 60 * 1000;
     const TOPIC_BANK = {
       finance: ["Financial statements", "Valuation", "Discounted cash flow", "Markets & business judgment", "Excel & analysis", "Behavioural stories"],
+      marketing: ["Campaign strategy", "Consumer behaviour", "Market research", "Brand positioning", "Marketing analytics", "Content strategy", "Behavioural stories"],
       banking: ["Discounted cash flow", "Valuation multiples", "Accounting links", "Enterprise value", "Accretion / dilution", "Markets & business judgment", "Behavioural stories"],
       accounting: ["Financial statements", "Reconciliations & controls", "Revenue recognition", "Audit judgment", "Excel & analysis", "Behavioural stories"],
       business: ["Case structure", "Market sizing", "Profitability", "Prioritization", "Communication", "Behavioural stories"],
@@ -344,9 +339,6 @@
       "Final round": ["Behavioural stories", "Role motivation", "Communication", "Problem solving", "Markets & business judgment"],
       "Not sure yet": ["Role motivation", "Communication", "Problem solving", "Behavioural stories"]
     };
-    const BASE_REPORTS = [
-      { label: "Sample reports (fictional)", topics: { "Discounted cash flow": 8, "Behavioural stories": 7, "SQL": 6, "Case structure": 6, "Data structures": 5, "Financial statements": 5, "System design": 4, "Communication": 4, "Valuation multiples": 3, "Testing & quality": 3, "Market sizing": 3, "Role motivation": 2 } }
-    ];
     const DEFAULT_STATE = { plan: { job: "", company: "", region: "Canada", location: "", experienceLevel: "", position: "Internship / co-op", term: "", confirmedDate: "", interviewDate: "", jobDescription: "", resumeContext: "" }, checked: {}, taskFeedback: {}, practice: { job: "", round: "First / recruiter screen", notes: "", focusTopic: "", difficult: [], history: [], missed: {}, diagnosticDone: false }, reports: [], opportunities: [] };
     let state = loadState();
     let jobFeed = null;
@@ -362,6 +354,7 @@
           plan: Object.assign({}, DEFAULT_STATE.plan, val.plan || {}),
           practice: Object.assign({}, DEFAULT_STATE.practice, val.practice || {}),
           taskFeedback: Object.assign({}, DEFAULT_STATE.taskFeedback, val.taskFeedback || {}),
+          reports: Array.isArray(val.reports) ? val.reports.filter(report => report && report.label !== "clearly labelled fictional sample") : [],
           opportunities: Array.isArray(val.opportunities) ? val.opportunities : []
         }) : structuredClone(DEFAULT_STATE);
       } catch (e) { return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
@@ -380,6 +373,7 @@
       if (/account|auditor|bookkeep|tax/.test(s)) return "accounting";
       if (/finance|financial|investment analyst|equity|treasury|risk analyst|portfolio/.test(s)) return "finance";
       if (/software|developer|programmer|web engineer|frontend|back.end/.test(s)) return "software";
+      if (/marketing|brand|campaign|growth|communications|consumer/.test(s)) return "marketing";
       if (/data|analytics|statistic|machine learning|business intelligence/.test(s)) return "data";
       if (/engineer|mechanical|electrical|civil|chemical|manufacturing/.test(s)) return "engineering";
       if (/business|consult|strategy|product manager|operations|marketing|sales/.test(s)) return "business";
@@ -387,7 +381,7 @@
     }
     function currentJob() { return state.practice.job || state.plan.job || "your target role"; }
     function familyName(job) {
-      const names = { banking:"investment banking", accounting:"accounting", finance:"finance", business:"business", software:"software", data:"data and analytics", engineering:"engineering", general:"general" };
+      const names = { banking:"investment banking", accounting:"accounting", finance:"finance", marketing:"marketing", business:"business", software:"software", data:"data and analytics", engineering:"engineering", general:"general" };
       return names[family(job)];
     }
     function topicsFor(job) { return TOPIC_BANK[family(job)]; }
@@ -1376,41 +1370,58 @@
         "final-round": COMMON_BY_ROUND["Final round"]
       };
       const roleTopics = topicsFor(job).filter(topic => topic !== "Behavioural stories");
-      return Array.from(new Set([].concat(byRound[round] || [], round === "technical" ? roleTopics : [])));
+      const commonTopics = byRound[round] || [];
+      const combined = round === "technical"
+        ? [].concat(roleTopics, commonTopics)
+        : [].concat(commonTopics, roleTopics);
+      return Array.from(new Set(combined));
     }
     function updateReportTopics() {
       const job = $("#report-job").value.trim() || currentJob();
       const round = $("#report-round").value;
       renderTopics($("#report-topics"), reportTopicNames(job, round), []);
     }
-    function reportsCounts() {
-      const counts={};
-      BASE_REPORTS.forEach(r=>Object.keys(r.topics).forEach(t=>counts[t]=(counts[t]||0)+r.topics[t]));
-      state.reports.forEach(r=>r.topics.forEach(t=>counts[t]=(counts[t]||0)+1));
+    function reportsCounts(job) {
+      const selectedFamily = family(job);
+      const exactJob = String(job || "").trim().toLowerCase();
+      const counts = {};
+      reportTopicNames(job, "technical").forEach(topic => counts[topic] = 0);
+      reportTopicNames(job, "behavioral").forEach(topic => counts[topic] = 0);
+      reportTopicNames(job, "case-study").forEach(topic => counts[topic] = 0);
+      reportTopicNames(job, "screening").forEach(topic => counts[topic] = 0);
+      reportTopicNames(job, "final-round").forEach(topic => counts[topic] = 0);
+      state.reports.forEach(report => {
+        const reportJob = String(report.job || "").trim();
+        const matchesIndustry = family(reportJob) === selectedFamily;
+        const matchesRole = !exactJob || !reportJob || reportJob.toLowerCase() === exactJob;
+        if (!matchesIndustry || (!matchesRole && selectedFamily === "general")) return;
+        report.topics.forEach(topic => counts[topic] = (counts[topic] || 0) + 1);
+      });
       return counts;
     }
     function renderCommunity() {
       updateReportTopics();
       $("#report-job").oninput=updateReportTopics;
       $("#report-round").onchange=updateReportTopics;
-      const counts=reportsCounts();
+      const job = $("#report-job").value.trim() || currentJob();
+      const counts=reportsCounts(job);
       const entries=Object.keys(counts).map(t=>[t,counts[t]]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
       const max=entries.length?entries[0][1]:1, box=$("#topic-rankings"); box.replaceChildren();
       entries.forEach(([topic,count])=>{
         const row=document.createElement("div"); row.className="topic-row";
         const name=document.createElement("strong"); name.textContent=topic;
-        const label=document.createElement("span"); label.className="topic-count"; label.textContent=count+" sample mention"+(count===1?"":"s");
-        const bar=document.createElement("div"); bar.className="progress"; const fill=document.createElement("span"); fill.style.width=Math.max(4,count/max*100)+"%"; bar.append(fill);
+        const label=document.createElement("span"); label.className="topic-count"; label.textContent=count+" report mention"+(count===1?"":"s");
+        const bar=document.createElement("div"); bar.className="progress"; const fill=document.createElement("span"); fill.style.width=(count===0?0:count/max*100)+"%"; bar.append(fill);
         row.append(name,label,bar); box.append(row);
       });
       if(state.reports.length){
-        const note=document.createElement("p"); note.className="hint"; note.style.marginTop="13px"; note.textContent="Your local sample reports added "+state.reports.reduce((n,r)=>n+r.topics.length,0)+" topic mentions on this device."; box.append(note);
+        const note=document.createElement("p"); note.className="hint"; note.style.marginTop="13px"; note.textContent="Your local reports added "+state.reports.reduce((n,r)=>n+r.topics.length,0)+" topic mentions on this device."; box.append(note);
       }
     }
     function submitReport(topics, job, round, label) {
       if(!topics.length){toast("Select at least one topic first.");return false;}
-      state.reports.push({job,round,topics,label:label||"local anonymous sample",date:new Date().toISOString()});
-      save(); renderCommunity(); $("#report-confirm").textContent="Thanks — your anonymous sample report changed the topic counts above. It stays in this browser.";
+      state.reports.push({job,round,topics,label:label||"local anonymous report",date:new Date().toISOString()});
+      save(); renderCommunity(); $("#report-confirm").textContent="Thanks — your anonymous report updated the topic counts above. It stays in this browser.";
       return true;
     }
     function findAlumni() {
@@ -1584,7 +1595,19 @@
       $("#guide-round").addEventListener("change",renderGuide);
       $("#find-alumni").addEventListener("click",findAlumni);
       $("#submit-report").addEventListener("click",()=>submitReport($$("#report-topics input:checked").map(i=>i.value),$("#report-job").value.trim()||currentJob(),$("#report-round").selectedOptions[0].textContent));
-      $("#use-sample-report").addEventListener("click",()=>submitReport(["Discounted cash flow","Accounting links","Enterprise value"],"Investment Banking Analyst","Technical","clearly labelled fictional sample"));
+      const addCustomTopic = () => {
+        const input = $("#custom-report-topic");
+        const topic = input.value.trim();
+        if (!topic) { toast("Enter a custom interview topic first."); return; }
+        const label = document.createElement("label"); label.className = "topic-choice";
+        const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.value = topic; checkbox.checked = true;
+        const text = document.createElement("span"); text.textContent = topic;
+        label.append(checkbox, text);
+        $("#report-topics").append(label);
+        input.value = "";
+      };
+      $("#add-custom-report-topic").addEventListener("click", addCustomTopic);
+      $("#custom-report-topic").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addCustomTopic(); } });
       const hash=location.hash.slice(1);
       showPage(["planner","practice","guide","community","alumni"].includes(hash)?hash:"planner");
       renderCommunity();

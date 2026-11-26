@@ -131,6 +131,18 @@
     .foot strong { color: var(--green); }
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #292b28; color: white; border-radius: 999px; padding: 10px 16px; z-index: 8; transition: .2s; font-size: .9rem; }
     .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+    .price-card { position: relative; display: flex; flex-direction: column; min-height: 360px; }
+    .price-card.featured { border-color: var(--green); box-shadow: 0 16px 36px rgba(53,91,72,.12); }
+    .price-card.featured::before { content: "Most popular"; position: absolute; top: -12px; left: 18px; border-radius: 999px; background: var(--green); color: #fff; padding: 4px 10px; font-size: .72rem; font-weight: 850; }
+    .price { margin: 12px 0 4px; font-size: 2.35rem; line-height: 1; letter-spacing: -.05em; }
+    .price small { font-size: .82rem; color: var(--muted); letter-spacing: 0; }
+    .plan-list { list-style: none; display: grid; gap: 10px; margin: 18px 0; padding: 0; color: #555950; }
+    .plan-list li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+    .plan-list li::before { content: "✓"; color: var(--green); font-weight: 900; }
+    .plan-card-action { margin-top: auto; }
+    .pricing-note { margin-top: 18px; }
+    .foot-disclaimer { max-width: 900px; margin: 8px auto 0; font-size: .76rem; line-height: 1.45; }
     .speech-note { font-size: .82rem; color: var(--muted); }
     .difficulty-card { text-align: center; }
     .difficulty-gauge { --gauge-angle: 0deg; --gauge-color: #4f8a61; position: relative; width: 150px; height: 150px; margin: 12px auto 10px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--gauge-color) var(--gauge-angle), #ecebe4 0); }
@@ -162,6 +174,7 @@
       .hero, .layout { grid-template-columns: 1fr; }
       .hero-note { max-width: 580px; }
       .layout { gap: 14px; }
+      .pricing-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 560px) {
       .top-inner { padding: 10px 14px; flex-direction: column; align-items: stretch; gap: 8px; }
@@ -192,6 +205,7 @@
         <button class="nav-btn" data-page="alumni">Find alumni</button>
         <button class="nav-btn" data-page="guide">Topic guide</button>
         <button class="nav-btn" data-page="community">What came up?</button>
+        <button class="nav-btn" data-page="plans">Plans</button>
       </nav>
     </div>
   </header>
@@ -357,8 +371,66 @@
       </article>
       <div id="alumni-results" style="margin-top:16px"></div>
     </section>
+
+    <section class="view" id="plans" hidden>
+      <div class="page-intro">
+        <p class="eyebrow">Fictional pricing prototype</p>
+        <h1>Choose a study plan.</h1>
+        <p>These plans show how a future paid UpNext service could work. No payment is collected, and no subscription is activated on this student prototype.</p>
+      </div>
+      <div class="pricing-grid" aria-label="Example UpNext subscription plans">
+        <article class="card price-card">
+          <p class="eyebrow">Starter</p>
+          <h2>Build a free foundation</h2>
+          <p class="price">$0 <small>/ month</small></p>
+          <p class="muted">For students starting an application or interview plan.</p>
+          <ul class="plan-list">
+            <li>Personal weekly preparation checklist</li>
+            <li>Topic guides and short practice quizzes</li>
+            <li>Browser-based progress saving</li>
+            <li>Community topic reporting</li>
+          </ul>
+          <button class="button secondary plan-card-action" type="button" data-plan-preview="Starter">Preview Starter</button>
+        </article>
+        <article class="card price-card featured">
+          <p class="eyebrow">Prep Plus</p>
+          <h2>Prepare for multiple rounds</h2>
+          <p class="price">$12 <small>/ month</small></p>
+          <p class="muted">For applicants preparing for interviews in the next few months.</p>
+          <ul class="plan-list">
+            <li>Everything in Starter</li>
+            <li>Extended mock interview sessions</li>
+            <li>Saved role and round comparisons</li>
+            <li>Advanced weak-topic tracking</li>
+            <li>Personal preparation timeline</li>
+          </ul>
+          <button class="button plan-card-action" type="button" data-plan-preview="Prep Plus">Preview Prep Plus</button>
+        </article>
+        <article class="card price-card">
+          <p class="eyebrow">Career Suite</p>
+          <h2>Manage a full application season</h2>
+          <p class="price">$25 <small>/ month</small></p>
+          <p class="muted">For students managing several applications and interviews.</p>
+          <ul class="plan-list">
+            <li>Everything in Prep Plus</li>
+            <li>Unlimited saved application plans</li>
+            <li>Portfolio and resume review prompts</li>
+            <li>Interview report trends by role</li>
+            <li>Priority feature previews</li>
+          </ul>
+          <button class="button ghost plan-card-action" type="button" data-plan-preview="Career Suite">Preview Career Suite</button>
+        </article>
+      </div>
+      <article class="card pricing-note">
+        <h2>About hypothetical payment</h2>
+        <p class="muted">A real paid version would need secure account creation, billing, cancellation, refunds, privacy controls, tax handling, and a server. The prices above are estimates for this university prototype only and are not offers to sell or active subscriptions.</p>
+      </article>
+    </section>
   </main>
-  <footer class="foot"><strong>Student prototype</strong> · Fictional examples · Progress is saved only in this browser</footer>
+  <footer class="foot">
+    <strong>Student prototype</strong> · Fictional examples · Progress is saved only in this browser
+    <p class="foot-disclaimer">This is a student prototype created for a university project. It is not a real commercial service and is for general information only, not financial or career advice. Any estimates or guidance are illustrative. Verify application requirements, interview expectations, deadlines, salaries, and financial information with official employers, institutions, and professional sources.</p>
+  </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script>
   (function () {
@@ -1886,7 +1958,10 @@
       $("#add-custom-report-topic").addEventListener("click", addCustomTopic);
       $("#custom-report-topic").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addCustomTopic(); } });
       const hash=location.hash.slice(1);
-      showPage(["planner","practice","guide","community","alumni"].includes(hash)?hash:"planner");
+      showPage(["planner","practice","guide","community","alumni","plans"].includes(hash)?hash:"planner");
+      $$("[data-plan-preview]").forEach(button => button.addEventListener("click", () => {
+        toast(button.dataset.planPreview + " is a fictional plan. No payment would be collected.");
+      }));
       renderCommunity();
     }
     init();

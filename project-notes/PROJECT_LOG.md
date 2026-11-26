@@ -47,6 +47,16 @@ Copy this block for each session.
 **Final live site link:** https://alasdair111.github.io/interview-prep-1-/  
 **Deployment method:** GitHub Pages with GitHub Actions
 
+### Session — 2026-11-26 — driver: not provided in chat
+
+- **Goal for this session:** Add a fictional customer pricing plan and a university-prototype disclaimer.
+- **Key prompts we gave Copilot** (paste the important ones):
+  1. “make me a fictional payment plan for paying customers”
+  2. “at the bottom of the website make a disclaimer saying this is a student prototype for a university project. not a real commercial service, general information only/not financial or career advice, estimates and verify on official websites”
+- **What worked:** The website now includes a Plans page with three clearly labelled fictional tiers: Starter, Prep Plus, and Career Suite. Preview buttons explain that no payment will be collected. The footer now includes a prominent student-prototype, general-information, and verification disclaimer.
+- **What broke, and how we fixed it:** No implementation failure was reported. The payment design remains fictional and does not collect money or activate subscriptions.
+- **Committed?** yes — committed with the fictional pricing and disclaimer update.
+
 ---
 
 ## Things that broke (running list)

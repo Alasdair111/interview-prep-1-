@@ -116,8 +116,11 @@
     .company-career-links { margin-top: 20px; overflow: hidden; padding: 4px 0 12px; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%); }
     .company-career-track { display: flex; width: max-content; animation: company-carousel 48s linear infinite; }
     .company-career-set { display: flex; flex: none; gap: 10px; }
-    .company-career-link { display: flex; flex: 0 0 230px; align-items: center; gap: 12px; min-height: 64px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #fffefa; color: var(--green); font-weight: 750; }
-    .company-career-logo { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 8px; background: var(--sage); color: var(--green); font-size: .72rem; font-weight: 850; letter-spacing: 0; }
+    .company-career-link { display: flex; flex: 0 0 230px; align-items: center; gap: 12px; min-height: 64px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #fffefa; color: var(--green); font-weight: 750; text-decoration: none; }
+    .company-career-link:hover { border-color: #9eb8a2; box-shadow: var(--shadow); transform: translateY(-1px); }
+    .company-career-link:focus-visible { outline: 3px solid #d78043; outline-offset: 3px; }
+    .company-career-logo, .company-career-fallback { width: 36px; height: 36px; flex: 0 0 36px; object-fit: contain; border-radius: 8px; background: #fff; }
+    .company-career-fallback { display: grid; place-items: center; color: var(--green); background: var(--sage); font-size: .8rem; font-weight: 850; }
     .company-career-link > span { display: grid; gap: 2px; }
     .company-career-field { color: var(--muted); font-size: .78rem; font-weight: 550; }
     @keyframes company-carousel { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -688,18 +691,18 @@
       return jobFeed;
     }
     const STUDENT_CAREER_COMPANIES = [
-      { name:"Northvale", field:"Investment banking", mark:"NV" },
-      { name:"Cedar & Finch", field:"Private finance", mark:"CF" },
-      { name:"Brightwell", field:"Business advisory", mark:"BW" },
-      { name:"Asteron", field:"Software and technology", mark:"AS" },
-      { name:"Lumenport", field:"Engineering", mark:"LP" },
-      { name:"Silverwood", field:"Accounting and consulting", mark:"SW" },
-      { name:"Orbitleaf", field:"Data and operations", mark:"OL" },
-      { name:"Harbourlane", field:"Markets and finance", mark:"HL" },
-      { name:"Kestrel Grid", field:"Clean technology", mark:"KG" },
-      { name:"Pinecrest", field:"Strategy and design", mark:"PC" },
-      { name:"Bluehaven", field:"Digital consulting", mark:"BH" },
-      { name:"Everstone", field:"Product and engineering", mark:"ES" }
+      { name:"Goldman Sachs", field:"Investment banking", domain:"www.goldmansachs.com", url:"https://www.goldmansachs.com/careers/students" },
+      { name:"JPMorgan Chase", field:"Investment banking", domain:"www.jpmorganchase.com", url:"https://www.jpmorganchase.com/careers/explore-opportunities/programs" },
+      { name:"Morgan Stanley", field:"Investment banking", domain:"www.morganstanley.com", url:"https://www.morganstanley.com/people-opportunities/students-graduates" },
+      { name:"RBC", field:"Finance", domain:"www.rbc.com", url:"https://jobs.rbc.com/ca/en/students-graduates" },
+      { name:"Deloitte", field:"Accounting and consulting", domain:"www.deloitte.com", url:"https://www.deloitte.com/us/en/careers/student-careers.html" },
+      { name:"Accenture", field:"Consulting and technology", domain:"www.accenture.com", url:"https://www.accenture.com/us-en/careers/life-at-accenture/internships-students" },
+      { name:"Microsoft", field:"Software and technology", domain:"www.microsoft.com", url:"https://careers.microsoft.com/v2/global/en/students" },
+      { name:"Google", field:"Software and technology", domain:"www.google.com", url:"https://www.google.com/about/careers/applications/students" },
+      { name:"Amazon", field:"Software and operations", domain:"www.amazon.com", url:"https://www.amazon.jobs/content/en/career-programs/university" },
+      { name:"Meta", field:"Software and technology", domain:"www.meta.com", url:"https://www.metacareers.com/careerprograms/students" },
+      { name:"NVIDIA", field:"Engineering and technology", domain:"www.nvidia.com", url:"https://www.nvidia.com/en-us/about-nvidia/careers/university-recruiting/" },
+      { name:"Arup", field:"Engineering", domain:"www.arup.com", url:"https://www.arup.com/en-us/careers/early-careers/" }
     ];
     function renderCompanyCareerLinks() {
       const list = $("#your-opportunities");
@@ -711,12 +714,26 @@
         set.className = "company-career-set";
         if (duplicate) set.setAttribute("aria-hidden", "true");
         STUDENT_CAREER_COMPANIES.forEach(company => {
-          const item = document.createElement("div");
+          const item = document.createElement(duplicate ? "div" : "a");
           item.className = "company-career-link";
-          if (!duplicate) item.setAttribute("aria-label", company.name + " — " + company.field);
-          const logo = document.createElement("span");
+          if (!duplicate) {
+            item.href = company.url;
+            item.target = "_blank";
+            item.rel = "noopener noreferrer";
+            item.setAttribute("aria-label", company.name + " " + company.field + " student careers");
+          }
+          const logo = document.createElement("img");
           logo.className = "company-career-logo";
-          logo.textContent = company.mark;
+          logo.src = "https://www.google.com/s2/favicons?domain_url=" + encodeURIComponent("https://" + company.domain) + "&sz=64";
+          logo.alt = "";
+          logo.loading = "lazy";
+          logo.onerror = () => {
+            const fallback = document.createElement("span");
+            fallback.className = "company-career-fallback";
+            fallback.textContent = company.name.split(/\s+/).map(word => word[0]).join("").toUpperCase();
+            fallback.setAttribute("aria-hidden", "true");
+            logo.replaceWith(fallback);
+          };
           if (duplicate) logo.setAttribute("aria-hidden", "true");
           const label = document.createElement("span");
           const name = document.createElement("strong");

@@ -2,7 +2,7 @@
 
 Keep this up to date as you go — a few lines per work session is enough. It's much harder to reconstruct at the end.
 
-**Team name:** Not provided in chat
+**Team name:** Alasdair Watson 
 **Startup name:** UpNext
 **Live site link:** https://alasdair111.github.io/interview-prep-1-/
 

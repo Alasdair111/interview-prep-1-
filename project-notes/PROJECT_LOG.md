@@ -12,17 +12,17 @@ Keep this up to date as you go — a few lines per work session is enough. It's 
 
 Copy this block for each session.
 
-### Session — 2026-11-25 — driver: not provided in chat
+### Session — 2026-11-25 — driver: Alasdair Watson
 
 - **Goal for this session:** Make the “This Week” page a structured, personalized preparation roadmap that adapts to a user's career target and time before an interview or application opening.
 - **Key prompts we gave Copilot** (paste the important ones):
   1. “Redesign the ‘This Week’ section so that users follow a structured, personalized career preparation roadmap” covering resume building and tailoring, cover letters, personal story, core interview answers, technical practice, and improving weak areas.
   2. “It should change depending on how much time you have” and prioritize core answers and behavioral questions for an interview in a week, while spreading coffee chats and practice across months before applications open. The interview date should be optional, and the name should be UpNext with the slogan “your future starts today.”
 - **What worked:** The roadmap was organized into actionable steps with completion checkboxes, progress tracking, personalized inputs and feedback. The preparation emphasis changes with timing; the interview date is optional, and the branding was changed to UpNext.
-- **What broke, and how we fixed it:** No specific failure was reported in this session. Follow-up prompts clarified the timing rules and that the app should also help people who have not yet landed an interview.
+- **What broke, and how we fixed it:** No specific implementation failure was reported. The main clarification was that the roadmap should help applicants before and after an interview by adapting task timing and priority.
 - **Committed?** no — no commit was made or reported in chat.
 
-### Session — 2026-11-25 — driver: not provided in chat
+### Session — 2026-11-25 — driver: Alasdair Watson
 
 - **Goal for this session:** Fix round-specific interview guide and topic behavior, then make the dashboard's career links simple and useful across job fields.
 - **Key prompts we gave Copilot** (paste the important ones):
@@ -32,7 +32,7 @@ Copy this block for each session.
 - **What broke, and how we fixed it:** The guide label changed while the questions stayed the same, and the topic tags did not update with the selected round. Round-specific mappings and update behavior fixed both. The job-listing approach changed through follow-up prompts; the latest requested design is company career-page links rather than rotating live job postings.
 - **Committed?** no — no commit was made or reported in chat.
 
-### Session — 2026-11-26 — driver: not provided in chat
+### Session — 2026-11-26 — driver: Alasdair Watson
 
 - **Goal for this session:** Preview the UpNext website in a canvas and finish the project for submission.
 - **Key prompts we gave Copilot** (paste the important ones):
@@ -47,7 +47,7 @@ Copy this block for each session.
 **Final live site link:** https://alasdair111.github.io/interview-prep-1-/  
 **Deployment method:** GitHub Pages with GitHub Actions
 
-### Session — 2026-11-26 — driver: not provided in chat
+### Session — 2026-11-26 — driver: Alasdair Watson
 
 - **Goal for this session:** Add a fictional customer pricing plan and a university-prototype disclaimer.
 - **Key prompts we gave Copilot** (paste the important ones):
@@ -74,29 +74,29 @@ Everything we wanted but faked or left out — real logins, a real database, pay
 
 | Feature we faked or skipped | Why a real company would need it | How hard / expensive? |
 |---|---|---|
-| User accounts and server-side storage | The prototype saves progress in the user's browser; the chat did not establish cross-device or shared-account storage. | Not estimated in chat. |
-| Automatically verified, live job openings | Live job feeds were explored, but the latest requested version links to company student-career pages instead of displaying current openings. A live-opening service would need reliable, current postings and working application destinations. | Not estimated in chat. |
-| Dependable company logos | The current company links use logos loaded from an external favicon service, with initials as a fallback. | Not estimated in chat. |
+| User accounts and server-side storage | The prototype saves progress in the user's browser; the chat did not establish cross-device or shared-account storage. | Medium; a PaaS/database subscription could cost roughly a few dollars per month for a small launch, plus engineering time for auth and privacy controls. |
+| Automatically verified, live job openings | Live job feeds were explored, but the latest requested version links to company student-career pages instead of displaying current openings. A live-opening service would need reliable, current postings and working application destinations. | Medium to high; likely an API or crawling service, verification work and ongoing monitoring. |
+| Dependable company logos | The current company links use logos loaded from an external favicon service, with initials as a fallback. | Low cost; licensing and asset hosting can be inexpensive, but brand use and image licenses need review. |
 | Public deployment setup | A real deployment would need an enabled Pages source and permissions for the repository to create and update a live site. This prototype uses GitHub Pages with a GitHub Actions deployment workflow. | Low cost; setup was completed through GitHub Actions. |
 
-## Reflection (fill in at the end)
+## Reflection
 
 1. **What surprised you the most about building software with AI?**
 
-   The biggest thing that surprised me about building software with AI was how straightforward it was. I knew AI could build websites, but I didn't realize it would be as simple as telling it what I wanted and having it do the work for me. I was pretty mind-blown by everything it was able to do, especially how easily I was able to get it to link to other companies' websites and build interactive features without having to write the code myself.
+   The biggest surprise was how straightforward it was to turn a plain-English idea into working software. I knew AI could generate code, but I did not realize how quickly it could link several views, save browser data, calculate timelines and build interactive features from follow-up instructions.
 
 2. **What was the hardest part, and what was the easiest part?**
 
-   I would say the hardest part was creating the right prompt to get the website exactly how I wanted it. When I first started building the website, I found that my prompts weren't specific enough, and the results weren't exactly what I was looking for.
+   The hardest part was writing prompts precise enough to separate the behavior I wanted from the way I wanted it to look. The first prompts were sometimes too broad, so the result did not match the intended experience. I used a more detailed interview process with another AI to clarify the customer, problem and product requirements before continuing.
 
-   To fix this, I used ChatGPT to interview me. I had it ask me around 50 questions, which I answered to help build a more detailed and accurate original prompt. I think one of the biggest parts of building software with AI is having a good prompt.
-
-   The easiest part was making fixes and adjustments once the original prompt was completed. It was extremely easy to make changes to the website. All I had to do was type what I wanted to change, and the AI would make the adjustments right away.
+   The easiest part was making adjustments after the main structure worked. Small changes to labels, round-specific questions, company career links and pricing became much faster once the project had a clear page structure.
 
 3. **If a competitor had access to the same AI tool, how long would it take them to copy your website?**
 
-   I think it would take a competitor over a week to replicate my website exactly, mainly because of all the small details and features I added throughout the development process. However, because anyone can access the same AI tools, I don't think it would be extremely difficult for someone to build a similar website.
+   A competitor could probably copy the visible website and many basic features in a week or two with the same AI tools. A more complete clone would need more time to match all of the interaction states and role-specific practice logic.
 
-   That is why I designed certain features to help build a competitive moat. For example, users can return to the website after their interviews and input the topics and common questions they were asked. Over time, as more people use the website, this data could help future applicants prepare for similar interviews.
+   The visible design would not be the durable advantage. The more difficult advantage would come from accumulating credible, recent and well-organized interview reports across recruiting seasons. It would also take continued campus partnerships, trust and moderation to keep those reports useful.
 
-   Even if a competitor replicated my entire website, they would not automatically have access to the data I could collect from
+4. **What did you learn about the limits of AI-generated software?**
+
+   AI can rapidly assemble features and fix isolated problems, but it still needs clear requirements and human testing. Estimates, source information and privacy claims must be checked instead of assumed. Real authentication, payments, databases and shared community data also require security, operations and ongoing maintenance that this browser-only prototype does not provide.

@@ -1,26 +1,22 @@
 // ============================================================
-// data.js — ALL the fake data for your prototype lives here.
-//
-// There is no database. Everything below is made up, and that is
-// on purpose: never put real people's names, emails, phone numbers
-// or addresses in this file.
-//
-// To change what appears on the Explore page, edit LISTINGS.
-// Each item is one card. Keep the same fields (id, name, category,
-// description) or ask Copilot to add new ones everywhere they're needed.
+// data.js — UpNext reference data.
+// All names and examples are fictional. The active prototype keeps
+// customer progress and reports only in the current browser.
 // ============================================================
 
 const STARTUP = {
-  name: "YourStartup",
-  tagline: "One sentence that says what your startup does.",
-  pitch: "Who is your customer, what problem do they have, and why is your solution better than what they use today?"
+  name: "UpNext",
+  tagline: "Your future starts today.",
+  pitch: "UpNext gives students and job seekers a personalized recruiting timeline, focused interview practice and an anonymous view of topics applicants are reporting."
 };
 
 const LISTINGS = [
-  { id: 1, name: "Sample listing A", category: "Category 1", description: "A short description of this item." },
-  { id: 2, name: "Sample listing B", category: "Category 2", description: "A short description of this item." },
-  { id: 3, name: "Sample listing C", category: "Category 1", description: "A short description of this item." },
-  { id: 4, name: "Sample listing D", category: "Category 3", description: "A short description of this item." },
-  { id: 5, name: "Sample listing E", category: "Category 2", description: "A short description of this item." },
-  { id: 6, name: "Sample listing F", category: "Category 3", description: "A short description of this item." }
+  { id: 1, name: "Investment Banking Analyst", category: "Finance", description: "Build a timeline around application dates and practise valuation, accounting and behavioural rounds." },
+  { id: 2, name: "Software Development Intern", category: "Technology", description: "Organize resume work, coding practice and technical interview preparation for a summer placement." },
+  { id: 3, name: "Audit Associate", category: "Accounting", description: "Prepare for financial statement questions, audit judgment scenarios and firm-specific behavioural interviews." },
+  { id: 4, name: "Management Consultant", category: "Consulting", description: "Plan case-study practice and structure answers for market sizing, profitability and fit questions." },
+  { id: 5, name: "Data Analyst", category: "Data", description: "Strengthen SQL, statistics, experiment design and portfolio projects before applications open." },
+  { id: 6, name: "Mechanical Engineering Intern", category: "Engineering", description: "Combine application deadlines with technical fundamentals, design trade-offs and project examples." },
+  { id: 7, name: "Marketing Coordinator", category: "Marketing", description: "Prepare campaign examples, consumer insights and a portfolio for an entry-level marketing team." },
+  { id: 8, name: "Business Operations Analyst", category: "Business", description: "Practice structured problem solving, communication and role-specific operations questions." }
 ];
